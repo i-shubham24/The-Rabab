@@ -50,8 +50,8 @@ const FeaturedDishes = () => {
           viewport={{ once: true }}
           transition={{ duration: 0.5, delay: 0.6 }}
         >
-          <Link to="/menu" className="btn btn-outline btn-lg">
-            View Full Menu
+          <Link to="/menu" className="gold-cta" style={{ padding: '1rem 2.5rem', fontSize: '1.1rem', letterSpacing: '1px' }}>
+            Browse Full Menu
           </Link>
         </motion.div>
       </div>
