@@ -399,7 +399,7 @@ const AdminDashboard = () => {
                 <div className="text-center w-100">No messages found</div>
               )}
             </div>
-          ) : (
+          ) : activeTab === 'menu' ? (
             <div className="menu-editor-section">
               <div className="menu-editor-actions" style={{ marginBottom: '1.5rem', display: 'flex', justifyContent: 'space-between' }}>
                 <button className="gold-cta" onClick={() => openMenuModal()}>+ Add New Dish</button>
