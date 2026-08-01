@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
-import { FaSignOutAlt, FaCalendarAlt, FaEnvelope, FaCheck, FaTimes, FaUtensils, FaTrash, FaEdit } from 'react-icons/fa';
+import { FaSignOutAlt, FaCalendarAlt, FaEnvelope, FaCheck, FaTimes, FaUtensils, FaTrash, FaEdit, FaImage } from 'react-icons/fa';
 import { menuItems as staticMenuItems } from '../../data/menuData.js';
 import './AdminDashboard.css';
 
@@ -10,6 +10,7 @@ const AdminDashboard = () => {
   const [bookings, setBookings] = useState([]);
   const [messages, setMessages] = useState([]);
   const [menuItems, setMenuItems] = useState([]);
+  const [galleryItems, setGalleryItems] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   
   // Menu Modal State
@@ -18,6 +19,12 @@ const AdminDashboard = () => {
   const [dishFormData, setDishFormData] = useState({
     name: '', description: '', price: '', category: 'starters',
     isVeg: true, isAvailable: true, image: '/images/food/dal-makhani.jpg'
+  });
+
+  // Gallery Modal State
+  const [showGalleryModal, setShowGalleryModal] = useState(false);
+  const [galleryFormData, setGalleryFormData] = useState({
+    title: '', category: 'Food', mediaUrl: ''
   });
 
   const navigate = useNavigate();
@@ -35,10 +42,11 @@ const AdminDashboard = () => {
   const fetchData = async () => {
     setIsLoading(true);
     try {
-      const [bookingsRes, messagesRes, menuRes] = await Promise.all([
+      const [bookingsRes, messagesRes, menuRes, galleryRes] = await Promise.all([
         fetch('/api/bookings', { headers: { Authorization: `Bearer ${token}` } }),
         fetch('/api/contact', { headers: { Authorization: `Bearer ${token}` } }),
-        fetch('/api/menu')
+        fetch('/api/menu'),
+        fetch('/api/gallery')
       ]);
 
       if (bookingsRes.status === 401 || messagesRes.status === 401) {
@@ -49,10 +57,12 @@ const AdminDashboard = () => {
       const bookingsData = await bookingsRes.json();
       const messagesData = await messagesRes.json();
       const menuData = await menuRes.json();
+      const galleryData = await galleryRes.json();
 
       setBookings(bookingsData);
       setMessages(messagesData);
       setMenuItems(menuData);
+      setGalleryItems(galleryData);
     } catch (err) {
       toast.error('Failed to load dashboard data');
     } finally {
@@ -189,6 +199,72 @@ const AdminDashboard = () => {
     }
   };
 
+  const handleSaveGallery = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await fetch('/api/gallery', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({ ...galleryFormData, mediaType: 'image', isApproved: true })
+      });
+
+      if (res.ok) {
+        toast.success('Photo added to gallery!');
+        setShowGalleryModal(false);
+        setGalleryFormData({ title: '', category: 'Food', mediaUrl: '' });
+        fetchData();
+      } else {
+        const errorData = await res.json();
+        toast.error(errorData.message || 'Failed to add photo');
+      }
+    } catch (err) {
+      toast.error('An error occurred while adding the photo');
+    }
+  };
+
+  const deleteGalleryItem = async (id) => {
+    if (!window.confirm('Are you sure you want to delete this photo?')) return;
+    try {
+      const res = await fetch(`/api/gallery/${id}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (res.ok) {
+        toast.success('Photo deleted');
+        fetchData();
+      }
+    } catch (err) {
+      toast.error('Failed to delete photo');
+    }
+  };
+
+  const handleSeedGallery = async () => {
+    setIsLoading(true);
+    try {
+      const staticGalleryData = [
+        { mediaUrl: '/images/food/dal-makhani.jpg', category: 'Food', title: 'Signature Dal Makhani' },
+        { mediaUrl: '/images/ambiance/interior.jpg', category: 'Ambiance', title: 'Royal Dining Area' },
+        { mediaUrl: '/images/food/food-spread.jpg', category: 'Food', title: 'The Royal Spread' }
+      ];
+      const res = await fetch('/api/gallery/seed', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ items: staticGalleryData })
+      });
+      if (res.ok) {
+        toast.success('Gallery seeded with default data!');
+        fetchData();
+      }
+    } catch (err) {
+      toast.error('Failed to seed gallery');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="admin-dashboard">
       <aside className="admin-sidebar">
@@ -215,6 +291,12 @@ const AdminDashboard = () => {
           >
             <FaUtensils /> Menu Editor
           </button>
+          <button 
+            className={`admin-nav-btn ${activeTab === 'gallery' ? 'active' : ''}`}
+            onClick={() => setActiveTab('gallery')}
+          >
+            <FaImage /> Gallery
+          </button>
         </nav>
         <div className="admin-bottom">
           <button className="logout-btn" onClick={handleLogout}>
@@ -229,11 +311,13 @@ const AdminDashboard = () => {
             {activeTab === 'bookings' && 'Reservations'}
             {activeTab === 'messages' && 'Customer Messages'}
             {activeTab === 'menu' && 'Menu Editor'}
+            {activeTab === 'gallery' && 'Gallery CMS'}
           </h1>
           <div className="admin-stats">
             {activeTab === 'bookings' && <span>Total: {bookings.length}</span>}
             {activeTab === 'messages' && <span>Unread: {messages.filter(m => !m.isRead).length}</span>}
             {activeTab === 'menu' && <span>Live Dishes: {menuItems.length}</span>}
+            {activeTab === 'gallery' && <span>Photos: {galleryItems.length}</span>}
           </div>
         </header>
 
@@ -369,9 +453,73 @@ const AdminDashboard = () => {
                 </table>
               </div>
             </div>
+          ) : (
+            <div className="gallery-editor-section">
+              <div className="menu-editor-actions" style={{ marginBottom: '1.5rem', display: 'flex', justifyContent: 'space-between' }}>
+                <button className="gold-cta" onClick={() => setShowGalleryModal(true)}>+ Add Photo</button>
+                {galleryItems.length === 0 && (
+                  <button className="gold-cta" style={{ background: 'transparent', border: '1px solid var(--gold)' }} onClick={handleSeedGallery}>
+                    Seed Default Photos
+                  </button>
+                )}
+              </div>
+              <div className="gallery-admin-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '1.5rem' }}>
+                {galleryItems.map(item => (
+                  <div key={item._id} className="gallery-admin-card" style={{ background: 'rgba(255,255,255,0.05)', borderRadius: '8px', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.1)' }}>
+                    <div style={{ height: '150px', overflow: 'hidden' }}>
+                      <img src={item.mediaUrl} alt={item.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    </div>
+                    <div style={{ padding: '1rem' }}>
+                      <h4 style={{ margin: '0 0 0.5rem', color: 'var(--gold)' }}>{item.title}</h4>
+                      <p style={{ margin: '0 0 1rem', fontSize: '0.8rem', color: '#aaa' }}>{item.category}</p>
+                      <button className="action-btn cancel" style={{ width: '100%' }} onClick={() => deleteGalleryItem(item._id)}>
+                        <FaTrash /> Delete
+                      </button>
+                    </div>
+                  </div>
+                ))}
+                {galleryItems.length === 0 && (
+                  <div className="text-center w-100" style={{ gridColumn: '1 / -1', padding: '3rem' }}>
+                    No photos in gallery. Click "Seed Default Photos" above.
+                  </div>
+                )}
+              </div>
+            </div>
           )}
         </div>
       </main>
+
+      {/* Gallery Modal */}
+      {showGalleryModal && (
+        <div className="modal-overlay">
+          <div className="modal-content glass-card" style={{ maxWidth: '400px' }}>
+            <div className="modal-header">
+              <h2>Add Photo</h2>
+              <button className="close-btn" onClick={() => setShowGalleryModal(false)}><FaTimes /></button>
+            </div>
+            <form onSubmit={handleSaveGallery} className="modal-form">
+              <div className="input-group">
+                <label>Caption / Title</label>
+                <input type="text" className="input-field" required value={galleryFormData.title} onChange={e => setGalleryFormData({...galleryFormData, title: e.target.value})} />
+              </div>
+              <div className="input-group">
+                <label>Category</label>
+                <select className="input-field" value={galleryFormData.category} onChange={e => setGalleryFormData({...galleryFormData, category: e.target.value})}>
+                  <option value="Food">Food</option>
+                  <option value="Ambiance">Ambiance</option>
+                  <option value="Events">Events</option>
+                  <option value="Kitchen">Kitchen</option>
+                </select>
+              </div>
+              <div className="input-group">
+                <label>Image URL</label>
+                <input type="url" className="input-field" required value={galleryFormData.mediaUrl} onChange={e => setGalleryFormData({...galleryFormData, mediaUrl: e.target.value})} placeholder="https://..." />
+              </div>
+              <button type="submit" className="gold-cta" style={{ width: '100%', marginTop: '1rem' }}>Upload Photo</button>
+            </form>
+          </div>
+        </div>
+      )}
 
       {/* Menu Modal */}
       {showMenuModal && (

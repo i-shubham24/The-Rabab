@@ -19,3 +19,14 @@ export const deleteGalleryItem = asyncHandler(async (req, res) => {
   }
   res.status(200).json({ message: 'Gallery item removed' });
 });
+
+export const seedGalleryItems = asyncHandler(async (req, res) => {
+  const { items } = req.body;
+  if (!items || !items.length) {
+    throw new ApiError(400, 'No items provided for seeding');
+  }
+
+  await Gallery.deleteMany({});
+  const createdItems = await Gallery.insertMany(items);
+  res.status(201).json(createdItems);
+});

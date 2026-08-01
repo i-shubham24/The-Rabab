@@ -3,28 +3,29 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { FaTimes, FaChevronLeft, FaChevronRight, FaExpand } from 'react-icons/fa';
 import './Gallery.css';
 
-// Sample gallery data
-const galleryData = [
-  { id: 1, src: '/images/food/dal-makhani.jpg', category: 'Food', caption: 'Signature Dal Makhani' },
-  { id: 2, src: '/images/ambiance/interior.jpg', category: 'Ambiance', caption: 'Royal Dining Area' },
-  { id: 3, src: '/images/food/food-spread.jpg', category: 'Food', caption: 'The Royal Spread' },
-  { id: 4, src: '/images/food/dal-makhani.jpg', category: 'Events', caption: 'Private Dining' },
-  { id: 5, src: '/images/ambiance/interior.jpg', category: 'Ambiance', caption: 'Elegant Seating' },
-  { id: 6, src: '/images/food/food-spread.jpg', category: 'Kitchen', caption: 'Master Chefs at Work' },
-  { id: 7, src: '/images/food/dal-makhani.jpg', category: 'Food', caption: 'Spices of India' },
-  { id: 8, src: '/images/ambiance/interior.jpg', category: 'Events', caption: 'Wedding Reception Setup' },
-  { id: 9, src: '/images/food/food-spread.jpg', category: 'Food', caption: 'Festive Thali' },
-  { id: 10, src: '/images/food/dal-makhani.jpg', category: 'Kitchen', caption: 'Tandoor Specials' },
-  { id: 11, src: '/images/ambiance/interior.jpg', category: 'Ambiance', caption: 'Evening Vibe' },
-  { id: 12, src: '/images/food/food-spread.jpg', category: 'Events', caption: 'Corporate Gatherings' }
-];
-
 const categories = ['All', 'Food', 'Ambiance', 'Events', 'Kitchen'];
 
 const Gallery = () => {
   const [activeCategory, setActiveCategory] = useState('All');
   const [selectedImage, setSelectedImage] = useState(null);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [galleryData, setGalleryData] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchGallery = async () => {
+      try {
+        const res = await fetch('/api/gallery');
+        const data = await res.json();
+        setGalleryData(data);
+      } catch (err) {
+        console.error('Failed to fetch gallery', err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchGallery();
+  }, []);
 
   const filteredGallery = activeCategory === 'All' 
     ? galleryData 
@@ -88,27 +89,33 @@ const Gallery = () => {
         {/* Masonry Grid */}
         <motion.div layout className="gallery-masonry">
           <AnimatePresence>
-            {filteredGallery.map((item, index) => (
-              <motion.div
-                key={item.id}
-                layout
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.8 }}
-                transition={{ duration: 0.4 }}
-                className="gallery-item"
-                onClick={() => openLightbox(index)}
-              >
-                <img src={item.src} alt={item.caption} loading="lazy" />
-                <div className="gallery-item-overlay">
-                  <div className="gallery-item-info">
-                    <FaExpand className="expand-icon" />
-                    <h3>{item.caption}</h3>
-                    <span>{item.category}</span>
+            {isLoading ? (
+              <div className="text-center w-100" style={{ padding: '4rem', color: '#fff' }}>Loading gallery...</div>
+            ) : filteredGallery.length === 0 ? (
+              <div className="text-center w-100" style={{ padding: '4rem', color: '#fff' }}>No images found.</div>
+            ) : (
+              filteredGallery.map((item, index) => (
+                <motion.div
+                  key={item._id || item.id || index}
+                  layout
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.8 }}
+                  transition={{ duration: 0.4 }}
+                  className="gallery-item"
+                  onClick={() => openLightbox(index)}
+                >
+                  <img src={item.mediaUrl || item.src} alt={item.title || item.caption} loading="lazy" />
+                  <div className="gallery-item-overlay">
+                    <div className="gallery-item-info">
+                      <FaExpand className="expand-icon" />
+                      <h3>{item.title || item.caption}</h3>
+                      <span>{item.category}</span>
+                    </div>
                   </div>
-                </div>
-              </motion.div>
-            ))}
+                </motion.div>
+              ))
+            )}
           </AnimatePresence>
         </motion.div>
       </section>
@@ -133,15 +140,15 @@ const Gallery = () => {
               
               <motion.div 
                 className="lightbox-image-container"
-                key={selectedImage.id}
+                key={selectedImage._id || selectedImage.id}
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.9 }}
                 transition={{ duration: 0.3 }}
               >
-                <img src={selectedImage.src} alt={selectedImage.caption} className="lightbox-image" />
+                <img src={selectedImage.mediaUrl || selectedImage.src} alt={selectedImage.title || selectedImage.caption} className="lightbox-image" />
                 <div className="lightbox-caption">
-                  <h2>{selectedImage.caption}</h2>
+                  <h2>{selectedImage.title || selectedImage.caption}</h2>
                   <p>{selectedImage.category}</p>
                 </div>
               </motion.div>
