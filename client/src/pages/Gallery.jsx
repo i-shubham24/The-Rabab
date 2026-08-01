@@ -96,15 +96,15 @@ const fallbackGallery = [
 
         {/* Masonry Grid */}
         <motion.div layout className="gallery-masonry">
-          <AnimatePresence>
+          <AnimatePresence mode="wait">
             {isLoading ? (
-              <div className="text-center w-100" style={{ padding: '4rem', color: '#fff' }}>Loading gallery...</div>
+              <motion.div key="loading" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="text-center w-100" style={{ padding: '4rem', color: '#fff' }}>Loading gallery...</motion.div>
             ) : filteredGallery.length === 0 ? (
-              <div className="text-center w-100" style={{ padding: '4rem', color: '#fff' }}>No images found.</div>
+              <motion.div key="empty" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="text-center w-100" style={{ padding: '4rem', color: '#fff' }}>No images found.</motion.div>
             ) : (
               filteredGallery.map((item, index) => (
                 <motion.div
-                  key={item._id || item.id || index}
+                  key={item._id || item.id || `gallery-item-${index}`}
                   layout
                   initial={{ opacity: 0, scale: 0.8 }}
                   animate={{ opacity: 1, scale: 1 }}
@@ -113,12 +113,12 @@ const fallbackGallery = [
                   className="gallery-item"
                   onClick={() => openLightbox(index)}
                 >
-                  <img src={item.mediaUrl || item.src} alt={item.title || item.caption} loading="lazy" />
+                  <img src={item.mediaUrl || item.src} alt={item.title || item.caption || 'Gallery Image'} loading="lazy" />
                   <div className="gallery-item-overlay">
                     <div className="gallery-item-info">
                       <FaExpand className="expand-icon" />
-                      <h3>{item.title || item.caption}</h3>
-                      <span>{item.category}</span>
+                      <h3>{item.title || item.caption || 'Image'}</h3>
+                      <span>{item.category || 'General'}</span>
                     </div>
                   </div>
                 </motion.div>
