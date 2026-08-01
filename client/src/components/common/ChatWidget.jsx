@@ -25,7 +25,10 @@ const ChatWidget = () => {
   }, [messages, isTyping]);
 
   useEffect(() => {
-    if (isOpen) inputRef.current?.focus();
+    if (isOpen) {
+      inputRef.current?.focus();
+      setInput('');
+    }
   }, [isOpen]);
 
   const handleSend = async () => {
@@ -88,6 +91,7 @@ const ChatWidget = () => {
 
   const switchMode = (newMode) => {
     setMode(newMode);
+    setInput('');
     const modeNames = { order: 'Order Assistant', booking: 'Booking Assistant', support: 'Support Agent' };
     setMessages([{
       role: 'assistant',
