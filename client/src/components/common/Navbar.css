@@ -183,18 +183,7 @@
 }
 
 .navbar__cta {
-  display: none;
-}
-
-.navbar__mobile-book {
-  display: none;
-  font-size: 1.2rem;
-  color: var(--gold);
-  transition: color var(--transition-fast);
-}
-
-.navbar__mobile-book:hover {
-  color: var(--gold-400);
+  display: none !important;
 }
 
 /* ─── Mobile Toggle ─── */
@@ -288,12 +277,14 @@
     display: inline;
   }
   .navbar__cta {
-    display: inline-flex;
+    display: inline-flex !important;
   }
 }
 
 @media (max-width: 1024px) {
-  .navbar__links {
+  .navbar__links,
+  .navbar__phone,
+  .navbar__social {
     display: none;
   }
   .navbar__actions {
@@ -302,21 +293,10 @@
   .navbar__toggle {
     display: block;
   }
-  .navbar__mobile-book {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
 }
 
 @media (max-width: 480px) {
   .navbar__container {
     padding: 0 var(--space-md);
-  }
-  .navbar__phone {
-    display: none;
-  }
-  .navbar__social {
-    display: none;
   }
 }
