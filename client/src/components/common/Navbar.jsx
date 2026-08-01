@@ -122,7 +122,7 @@ const Navbar = () => {
               </span>
             )}
           </button>
-          <Link to="/booking" className="gold-cta">
+          <Link to="/booking" className="gold-cta" style={{ padding: '0.6rem 1.2rem', fontSize: '0.85rem' }}>
             Book a Table
           </Link>
         </div>

@@ -1,10 +1,19 @@
-import React from 'react';
-import { motion } from 'framer-motion';
+import React, { useRef } from 'react';
+import { motion, useScroll, useTransform } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { FaChevronDown } from 'react-icons/fa';
 import './Hero.css';
 
 const Hero = () => {
+  const containerRef = useRef(null);
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ['start start', 'end start']
+  });
+
+  const yBackground = useTransform(scrollYProgress, [0, 1], ['0%', '50%']);
+  const opacityText = useTransform(scrollYProgress, [0, 1], [1, 0]);
+
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -26,10 +35,16 @@ const Hero = () => {
   };
 
   return (
-    <section className="hero-section">
-      <div className="hero-background" style={{ backgroundImage: 'url(/images/ambiance/interior.jpg)' }}>
+    <section className="hero-section" ref={containerRef}>
+      <motion.div 
+        className="hero-background" 
+        style={{ 
+          backgroundImage: 'url(/images/ambiance/interior.jpg)',
+          y: yBackground 
+        }}
+      >
         <div className="hero-overlay"></div>
-      </div>
+      </motion.div>
       
       <div className="gold-particles">
         {[...Array(10)].map((_, i) => (
@@ -48,6 +63,7 @@ const Hero = () => {
           variants={containerVariants}
           initial="hidden"
           animate="visible"
+          style={{ opacity: opacityText }}
         >
           <motion.h2 className="hero-subheading" variants={itemVariants}>
             Experience Royal Dining at Rabab

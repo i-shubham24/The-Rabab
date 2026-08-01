@@ -138,7 +138,19 @@
   padding: 2px 8px;
   background: rgba(201, 168, 76, 0.2);
   color: var(--burgundy, #800020);
-  border-radius: 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(201, 168, 76, 0.5);
+}
+
+.menu-card.glass-panel:hover .menu-card-title,
+.menu-card.glass-panel:hover .menu-card-desc,
+.menu-card.glass-panel:hover .menu-card-price {
+  color: #fff;
+}
+
+.menu-card.glass-panel:hover .allergen-tag {
+  color: var(--gold, #C9A84C);
+  border-color: var(--gold, #C9A84C);
 }
 
 .menu-card-footer {

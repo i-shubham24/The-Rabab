@@ -11,6 +11,10 @@ import CartDrawer from './components/common/CartDrawer';
 import ChatWidget from './components/common/ChatWidget';
 import './styles/index.css';
 
+import PageWrapper from './components/common/PageWrapper';
+import CustomCursor from './components/common/CustomCursor';
+import { AnimatePresence } from 'framer-motion';
+
 // Lazy-loaded pages for code-splitting
 const Home = lazy(() => import('./pages/Home'));
 const Menu = lazy(() => import('./pages/Menu'));
@@ -29,25 +33,28 @@ const AppContent = () => {
 
   return (
     <>
+      <CustomCursor />
       <ScrollToTop />
       <CartDrawer />
       {!isAdminRoute && <Navbar />}
       <main>
         <Suspense fallback={<Loader />}>
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/menu" element={<Menu />} />
-            <Route path="/gallery" element={<Gallery />} />
-            <Route path="/booking" element={<Booking />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="/checkout" element={<Checkout />} />
-            <Route path="/profile" element={<CustomerProfile />} />
-            
-            {/* Admin Routes */}
-            <Route path="/admin" element={<AdminLogin />} />
-            <Route path="/admin/dashboard" element={<AdminDashboard />} />
-          </Routes>
+          <AnimatePresence mode="wait">
+            <Routes location={location} key={location.pathname}>
+              <Route path="/" element={<PageWrapper><Home /></PageWrapper>} />
+              <Route path="/menu" element={<PageWrapper><Menu /></PageWrapper>} />
+              <Route path="/gallery" element={<PageWrapper><Gallery /></PageWrapper>} />
+              <Route path="/booking" element={<PageWrapper><Booking /></PageWrapper>} />
+              <Route path="/about" element={<PageWrapper><About /></PageWrapper>} />
+              <Route path="/contact" element={<PageWrapper><Contact /></PageWrapper>} />
+              <Route path="/checkout" element={<PageWrapper><Checkout /></PageWrapper>} />
+              <Route path="/profile" element={<PageWrapper><CustomerProfile /></PageWrapper>} />
+              
+              {/* Admin Routes */}
+              <Route path="/admin" element={<AdminLogin />} />
+              <Route path="/admin/dashboard" element={<AdminDashboard />} />
+            </Routes>
+          </AnimatePresence>
         </Suspense>
       </main>
       {!isAdminRoute && <Footer />}
