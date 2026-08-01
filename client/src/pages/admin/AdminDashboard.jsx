@@ -404,7 +404,7 @@ const AdminDashboard = () => {
               <div className="menu-editor-actions" style={{ marginBottom: '1.5rem', display: 'flex', justifyContent: 'space-between' }}>
                 <button className="gold-cta" onClick={() => openMenuModal()}>+ Add New Dish</button>
                 {menuItems.length === 0 && (
-                  <button className="gold-cta" style={{ background: 'transparent', border: '1px solid var(--gold)' }} onClick={handleSeedMenu}>
+                  <button className="gold-cta seed-btn" onClick={handleSeedMenu}>
                     Seed Default Menu
                   </button>
                 )}
@@ -458,7 +458,7 @@ const AdminDashboard = () => {
               <div className="menu-editor-actions" style={{ marginBottom: '1.5rem', display: 'flex', justifyContent: 'space-between' }}>
                 <button className="gold-cta" onClick={() => setShowGalleryModal(true)}>+ Add Photo</button>
                 {galleryItems.length === 0 && (
-                  <button className="gold-cta" style={{ background: 'transparent', border: '1px solid var(--gold)' }} onClick={handleSeedGallery}>
+                  <button className="gold-cta seed-btn" onClick={handleSeedGallery}>
                     Seed Default Photos
                   </button>
                 )}
