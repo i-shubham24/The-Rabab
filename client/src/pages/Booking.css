@@ -1,0 +1,293 @@
+.booking-page {
+  background-color: var(--charcoal, #1A1A1A);
+  color: var(--cream, #F5F0E8);
+  min-height: 100vh;
+  padding-bottom: 4rem;
+}
+
+.booking-hero {
+  background: linear-gradient(rgba(128, 0, 32, 0.7), rgba(26, 26, 26, 0.9)), url('/images/ambiance/booking-hero.jpg') center/cover;
+  padding: 6rem 2rem;
+  text-align: center;
+  border-bottom: 2px solid var(--gold, #C9A84C);
+}
+
+.hero-content h1 {
+  font-family: var(--font-display, 'Playfair Display', serif);
+  font-size: 3.5rem;
+  color: var(--gold, #C9A84C);
+  margin-bottom: 1rem;
+}
+
+.hero-content p {
+  font-family: var(--font-body, 'Cormorant Garamond', serif);
+  font-size: 1.5rem;
+  font-style: italic;
+}
+
+.booking-container {
+  max-width: 1200px;
+  margin: -3rem auto 0;
+  padding: 0 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 4rem;
+  position: relative;
+  z-index: 10;
+}
+
+.glass-card {
+  background: rgba(107, 15, 26, 0.2);
+  backdrop-filter: blur(15px);
+  border: 1px solid rgba(201, 168, 76, 0.3);
+  border-radius: 16px;
+  padding: 3rem 2rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.booking-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.form-row {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .form-row {
+    flex-direction: row;
+  }
+  .form-row > * {
+    flex: 1;
+  }
+}
+
+.input-group label {
+  display: block;
+  font-family: var(--font-accent, 'Cinzel', serif);
+  color: var(--gold, #C9A84C);
+  margin-bottom: 0.5rem;
+  font-size: 1.1rem;
+}
+
+.input-field {
+  width: 100%;
+  padding: 1rem;
+  background: rgba(26, 26, 26, 0.6);
+  border: 1px solid rgba(245, 240, 232, 0.2);
+  color: var(--cream, #F5F0E8);
+  font-family: var(--font-ui, 'Inter', sans-serif);
+  border-radius: 6px;
+  transition: all 0.3s ease;
+}
+
+.input-field:focus {
+  outline: none;
+  border-color: var(--gold, #C9A84C);
+  box-shadow: 0 0 10px rgba(201, 168, 76, 0.3);
+}
+
+.input-field[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(0.8) sepia(1) saturate(3) hue-rotate(5deg);
+}
+
+.party-size-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.party-btn {
+  background: rgba(26, 26, 26, 0.6);
+  border: 1px solid rgba(245, 240, 232, 0.2);
+  color: var(--cream, #F5F0E8);
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  font-family: var(--font-ui, 'Inter', sans-serif);
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.party-btn:hover, .party-btn.active {
+  background: var(--gold, #C9A84C);
+  color: var(--charcoal, #1A1A1A);
+  border-color: var(--gold, #C9A84C);
+}
+
+.radio-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+}
+
+.radio-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  font-family: var(--font-ui, 'Inter', sans-serif);
+}
+
+.radio-label input[type="radio"] {
+  accent-color: var(--gold, #C9A84C);
+  width: 1.2rem;
+  height: 1.2rem;
+}
+
+.submit-btn {
+  margin-top: 1rem;
+  font-size: 1.2rem;
+  padding: 1.2rem;
+}
+
+.gold-cta {
+  background: linear-gradient(135deg, #C9A84C, #D4AF37, #8B7330);
+  color: #1A1A1A;
+  padding: 1rem 2rem;
+  font-family: var(--font-display, 'Playfair Display', serif);
+  font-weight: bold;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  text-transform: uppercase;
+}
+
+.gold-cta:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 5px 20px rgba(201, 168, 76, 0.5);
+}
+
+/* Success State */
+.success-state {
+  text-align: center;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.success-icon {
+  font-size: 5rem;
+  color: var(--gold, #C9A84C);
+  margin-bottom: 1.5rem;
+}
+
+.success-state h2 {
+  font-family: var(--font-display, 'Playfair Display', serif);
+  color: var(--gold, #C9A84C);
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+}
+
+.success-msg {
+  font-family: var(--font-body, 'Cormorant Garamond', serif);
+  font-size: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.booking-details {
+  background: rgba(26, 26, 26, 0.6);
+  padding: 1.5rem;
+  border-radius: 8px;
+  margin-bottom: 2rem;
+  text-align: left;
+}
+
+.detail-item {
+  font-family: var(--font-ui, 'Inter', sans-serif);
+  font-size: 1.1rem;
+  margin-bottom: 0.8rem;
+  border-bottom: 1px dashed rgba(245, 240, 232, 0.2);
+  padding-bottom: 0.5rem;
+}
+
+.detail-item span {
+  color: var(--gold, #C9A84C);
+  font-weight: bold;
+  margin-right: 1rem;
+  display: inline-block;
+  width: 80px;
+}
+
+/* Why Dine With Us */
+.why-dine-section {
+  text-align: center;
+  margin-top: 2rem;
+}
+
+.why-dine-section h2 {
+  font-family: var(--font-display, 'Playfair Display', serif);
+  color: var(--gold, #C9A84C);
+  font-size: 2.5rem;
+  margin-bottom: 3rem;
+}
+
+.feature-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  margin-bottom: 3rem;
+}
+
+@media (min-width: 768px) {
+  .feature-cards {
+    flex-direction: row;
+    justify-content: center;
+  }
+  .feature-card {
+    flex: 1;
+    max-width: 350px;
+  }
+}
+
+.feature-card {
+  background: rgba(107, 15, 26, 0.1);
+  border: 1px solid rgba(201, 168, 76, 0.2);
+  padding: 2.5rem 1.5rem;
+  border-radius: 12px;
+  transition: transform 0.3s ease, background 0.3s ease;
+}
+
+.feature-card:hover {
+  transform: translateY(-10px);
+  background: rgba(107, 15, 26, 0.3);
+  border-color: var(--gold, #C9A84C);
+}
+
+.feature-icon {
+  font-size: 3rem;
+  color: var(--gold, #C9A84C);
+  margin-bottom: 1.5rem;
+}
+
+.feature-card h3 {
+  font-family: var(--font-accent, 'Cinzel', serif);
+  color: var(--cream, #F5F0E8);
+  margin-bottom: 1rem;
+  font-size: 1.5rem;
+}
+
+.feature-card p {
+  font-family: var(--font-body, 'Cormorant Garamond', serif);
+  font-size: 1.2rem;
+  color: #ccc;
+}
+
+.assistance-note {
+  font-family: var(--font-ui, 'Inter', sans-serif);
+  font-style: italic;
+  color: var(--cream, #F5F0E8);
+  padding: 2rem;
+  border-top: 1px solid rgba(201, 168, 76, 0.3);
+}
+
+.assistance-note strong {
+  color: var(--gold, #C9A84C);
+}

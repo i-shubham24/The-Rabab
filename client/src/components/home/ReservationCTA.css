@@ -1,0 +1,94 @@
+.reservation-cta {
+  position: relative;
+  padding: 100px 20px;
+  background: linear-gradient(135deg, var(--burgundy, #800020) 0%, #3d000f 100%);
+  text-align: center;
+  overflow: hidden;
+}
+
+.cta-pattern {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: radial-gradient(var(--gold, #C9A84C) 1px, transparent 1px);
+  background-size: 30px 30px;
+  opacity: 0.1;
+  pointer-events: none;
+}
+
+.cta-pattern::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, transparent 20%, #3d000f 70%);
+}
+
+.cta-content {
+  position: relative;
+  z-index: 1;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.cta-heading {
+  font-family: var(--font-display, 'Playfair Display', serif);
+  font-size: 3.5rem;
+  color: var(--cream, #F5F0E8);
+  margin-bottom: 20px;
+}
+
+.cta-subtext {
+  font-family: var(--font-body, 'Cormorant Garamond', serif);
+  font-size: 1.5rem;
+  color: var(--cream, #F5F0E8);
+  opacity: 0.9;
+  margin-bottom: 40px;
+}
+
+.cta-buttons {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+}
+
+.btn-outline-light {
+  display: inline-block;
+  padding: 12px 32px;
+  font-family: var(--font-ui, 'Inter', sans-serif);
+  font-size: 1rem;
+  font-weight: 500;
+  text-decoration: none;
+  background-color: transparent;
+  color: var(--cream, #F5F0E8);
+  border: 1px solid var(--cream, #F5F0E8);
+  border-radius: 4px;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.btn-outline-light:hover {
+  background-color: var(--cream, #F5F0E8);
+  color: var(--burgundy, #800020);
+}
+
+.pulse-anim {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 0 rgba(201, 168, 76, 0.7); }
+  70% { box-shadow: 0 0 0 15px rgba(201, 168, 76, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(201, 168, 76, 0); }
+}
+
+@media (max-width: 768px) {
+  .cta-heading { font-size: 2.5rem; }
+  .cta-subtext { font-size: 1.2rem; }
+  .cta-buttons { flex-direction: column; }
+}

@@ -1,0 +1,150 @@
+.featured-section {
+  padding: 100px 20px;
+  background-color: var(--dark, #1A1A1A);
+  color: var(--cream, #F5F0E8);
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.section-header {
+  text-align: center;
+  margin-bottom: 60px;
+}
+
+.section-label {
+  font-family: var(--font-accent, 'Cinzel', serif);
+  color: var(--gold, #C9A84C);
+  font-size: 1rem;
+  letter-spacing: 3px;
+  margin-bottom: 10px;
+}
+
+.section-title {
+  font-family: var(--font-display, 'Playfair Display', serif);
+  font-size: 3rem;
+  color: var(--cream, #F5F0E8);
+}
+
+.dishes-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 30px;
+}
+
+.dish-card {
+  background: rgba(26, 26, 26, 0.8);
+  border: 1px solid rgba(201, 168, 76, 0.2);
+  border-radius: 8px;
+  overflow: hidden;
+  transition: all 0.4s ease;
+  cursor: pointer;
+}
+
+.dish-card:hover {
+  transform: translateY(-10px);
+  border-color: var(--gold, #C9A84C);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5);
+}
+
+.dish-image-wrapper {
+  position: relative;
+  height: 250px;
+  overflow: hidden;
+}
+
+.dish-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.dish-card:hover .dish-image {
+  transform: scale(1.05);
+}
+
+.dish-overlay {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+}
+
+.dietary-badge {
+  width: 16px;
+  height: 16px;
+  border: 2px solid;
+  border-radius: 2px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(255, 255, 255, 0.9);
+}
+
+.dietary-badge::after {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.dietary-badge.veg {
+  border-color: #0f8a46;
+}
+.dietary-badge.veg::after {
+  background-color: #0f8a46;
+}
+
+.dietary-badge.non-veg {
+  border-color: #c92a2a;
+}
+.dietary-badge.non-veg::after {
+  background-color: #c92a2a;
+}
+
+.dish-info {
+  padding: 25px;
+}
+
+.dish-name {
+  font-family: var(--font-display, 'Playfair Display', serif);
+  font-size: 1.5rem;
+  margin-bottom: 10px;
+  color: var(--gold, #C9A84C);
+}
+
+.dish-description {
+  font-family: var(--font-body, 'Cormorant Garamond', serif);
+  font-size: 1.1rem;
+  color: #ccc;
+  line-height: 1.5;
+  margin-bottom: 20px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.dish-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.dish-price {
+  font-family: var(--font-ui, 'Inter', sans-serif);
+  font-weight: 600;
+  font-size: 1.25rem;
+  color: var(--cream, #F5F0E8);
+}
+
+@media (max-width: 992px) {
+  .dishes-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 768px) {
+  .dishes-grid { grid-template-columns: 1fr; }
+  .section-title { font-size: 2.5rem; }
+}

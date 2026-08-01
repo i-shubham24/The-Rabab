@@ -1,0 +1,128 @@
+.about-section {
+  padding: 100px 20px;
+  background-color: var(--cream, #F5F0E8);
+  color: var(--dark, #1A1A1A);
+  position: relative;
+  overflow: hidden;
+}
+
+.about-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 60px;
+}
+
+.about-image-wrapper {
+  flex: 1;
+  position: relative;
+  border-radius: 10px;
+}
+
+.about-image {
+  width: 100%;
+  height: 500px;
+  object-fit: cover;
+  border-radius: 8px;
+  position: relative;
+  z-index: 2;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+}
+
+.about-image-decoration {
+  position: absolute;
+  top: -20px;
+  left: -20px;
+  width: 100%;
+  height: 100%;
+  border: 2px solid var(--gold, #C9A84C);
+  border-radius: 8px;
+  z-index: 1;
+}
+
+.about-content {
+  flex: 1;
+}
+
+.about-heading {
+  font-family: var(--font-display, 'Playfair Display', serif);
+  font-size: 3.5rem;
+  color: var(--burgundy, #800020);
+  margin-bottom: 20px;
+}
+
+.about-text {
+  font-family: var(--font-body, 'Cormorant Garamond', serif);
+  font-size: 1.25rem;
+  line-height: 1.6;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.about-stats {
+  display: flex;
+  gap: 40px;
+  margin: 40px 0;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.stat-icon {
+  font-size: 2rem;
+  color: var(--gold, #C9A84C);
+  margin-bottom: 10px;
+}
+
+.stat-number {
+  font-family: var(--font-display, 'Playfair Display', serif);
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--burgundy, #800020);
+}
+
+.stat-label {
+  font-family: var(--font-ui, 'Inter', sans-serif);
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  color: #666;
+  margin-top: 5px;
+}
+
+.btn-outline-burgundy {
+  display: inline-block;
+  padding: 12px 32px;
+  font-family: var(--font-ui, 'Inter', sans-serif);
+  font-size: 1rem;
+  font-weight: 500;
+  text-decoration: none;
+  background-color: transparent;
+  color: var(--burgundy, #800020);
+  border: 1px solid var(--burgundy, #800020);
+  border-radius: 4px;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.btn-outline-burgundy:hover {
+  background-color: var(--burgundy, #800020);
+  color: var(--cream, #F5F0E8);
+}
+
+@media (max-width: 992px) {
+  .about-container { flex-direction: column; }
+  .about-image { height: 400px; }
+  .about-content { text-align: center; }
+  .about-stats { justify-content: center; }
+}
+
+@media (max-width: 768px) {
+  .about-heading { font-size: 2.5rem; }
+  .about-stats { flex-direction: column; gap: 20px; }
+}
