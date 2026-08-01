@@ -122,7 +122,7 @@ const Navbar = () => {
               </span>
             )}
           </button>
-          <Link to="/booking" className="btn btn-gold btn-sm navbar__cta">
+          <Link to="/booking" className="gold-cta">
             Book a Table
           </Link>
         </div>
@@ -171,7 +171,7 @@ const Navbar = () => {
                 <a href="tel:+917900324000" className="btn btn-outline w-full">
                   <FaPhone /> Call 7900324000
                 </a>
-                <Link to="/booking" className="btn btn-gold w-full">
+                <Link to="/booking" className="gold-cta w-full">
                   Book a Table
                 </Link>
               </div>

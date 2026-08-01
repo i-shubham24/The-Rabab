@@ -46,13 +46,83 @@ const Booking = () => {
     setIsSubmitting(true);
     setError(null);
     try {
+      // Step 1: Create Razorpay Order for 500 INR Deposit
+      const depositAmount = 500;
+      const orderRes = await fetch('/api/payments/create-order', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ amount: depositAmount, currency: 'INR' })
+      });
+      
+      if (!orderRes.ok) throw new Error('Failed to initialize payment');
+      
+      const { order, keyId } = await orderRes.json();
+
+      // Step 2: Open Razorpay Checkout Modal
+      const options = {
+        key: keyId,
+        amount: order.amount,
+        currency: order.currency,
+        name: 'Majestic Rabab',
+        description: 'Table Reservation Deposit',
+        order_id: order.id,
+        handler: async function (response) {
+          try {
+            // Step 3: Verify Payment Signature
+            const verifyRes = await fetch('/api/payments/verify', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(response)
+            });
+            
+            if (!verifyRes.ok) throw new Error('Payment verification failed');
+            
+            // Step 4: Submit the actual Booking to our DB
+            await confirmBooking(response.razorpay_payment_id);
+            
+          } catch (err) {
+            console.error(err);
+            setError('Payment verification failed. Please contact support.');
+            setIsSubmitting(false);
+          }
+        },
+        prefill: {
+          name: formData.name,
+          email: formData.email,
+          contact: formData.phone
+        },
+        theme: { color: '#800020' },
+        modal: {
+          ondismiss: function() {
+            setIsSubmitting(false);
+          }
+        }
+      };
+
+      const rzp1 = new window.Razorpay(options);
+      rzp1.on('payment.failed', function (response){
+        setError('Payment failed: ' + response.error.description);
+        setIsSubmitting(false);
+      });
+      rzp1.open();
+
+    } catch (err) {
+      console.error(err);
+      setError('Failed to initiate checkout. Please try again.');
+      setIsSubmitting(false);
+    }
+  };
+
+  const confirmBooking = async (paymentId) => {
+    try {
       const response = await fetch('/api/bookings', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           ...formData,
           user: user ? user._id : undefined,
-          partySize: parseInt(formData.partySize) || 2 // Backend expects number
+          partySize: parseInt(formData.partySize) || 2, // Backend expects number
+          paymentId // Pass the payment reference
         })
       });
       const data = await response.json();

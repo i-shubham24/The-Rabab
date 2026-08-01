@@ -37,6 +37,76 @@ const Checkout = () => {
     setIsSubmitting(true);
     
     try {
+      const totalAmount = getCartTotal();
+      
+      // Step 1: Create Razorpay Order on Backend
+      const orderRes = await fetch('/api/payments/create-order', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ amount: totalAmount, currency: 'INR' })
+      });
+      
+      if (!orderRes.ok) throw new Error('Failed to initialize payment');
+      
+      const { order, keyId } = await orderRes.json();
+
+      // Step 2: Open Razorpay Checkout Modal
+      const options = {
+        key: keyId,
+        amount: order.amount,
+        currency: order.currency,
+        name: 'Majestic Rabab',
+        description: 'Online Order Payment',
+        order_id: order.id,
+        handler: async function (response) {
+          try {
+            // Step 3: Verify Payment Signature on Backend
+            const verifyRes = await fetch('/api/payments/verify', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(response)
+            });
+            
+            if (!verifyRes.ok) throw new Error('Payment verification failed');
+            
+            // Step 4: Submit the actual Order to our DB
+            await placeOrder(response.razorpay_payment_id);
+            
+          } catch (err) {
+            console.error(err);
+            toast.error('Payment verification failed. Please contact support.');
+            setIsSubmitting(false);
+          }
+        },
+        prefill: {
+          name: formData.name,
+          email: formData.email,
+          contact: formData.phone
+        },
+        theme: { color: '#800020' },
+        modal: {
+          ondismiss: function() {
+            setIsSubmitting(false);
+          }
+        }
+      };
+
+      const rzp1 = new window.Razorpay(options);
+      rzp1.on('payment.failed', function (response){
+        toast.error('Payment failed: ' + response.error.description);
+        setIsSubmitting(false);
+      });
+      rzp1.open();
+
+    } catch (err) {
+      console.error(err);
+      toast.error('Failed to initiate checkout. Please try again.');
+      setIsSubmitting(false);
+    }
+  };
+
+  const placeOrder = async (paymentId) => {
+    try {
       const orderPayload = {
         items: cart.map(item => ({
           name: item.name,
@@ -52,7 +122,8 @@ const Checkout = () => {
         fulfillmentType: formData.fulfillmentType,
         deliveryAddress: formData.fulfillmentType === 'Delivery' ? formData.deliveryAddress : undefined,
         specialInstructions: formData.specialInstructions,
-        totalAmount: getCartTotal()
+        totalAmount: getCartTotal(),
+        paymentDetails: { paymentId, status: 'Paid' } // Add payment details
       };
 
       const token = localStorage.getItem('rabab_token');
@@ -69,16 +140,14 @@ const Checkout = () => {
 
       if (!res.ok) throw new Error('Order submission failed');
       
-      const data = await res.json();
       toast.success('Order placed successfully!');
       clearCart();
       
-      // Optionally redirect to a success page or profile if logged in
       navigate(user ? '/profile' : '/');
       
     } catch (err) {
       console.error(err);
-      toast.error('Failed to submit order. Please try again.');
+      toast.error('Order was paid but failed to save. Please contact support.');
     } finally {
       setIsSubmitting(false);
     }
