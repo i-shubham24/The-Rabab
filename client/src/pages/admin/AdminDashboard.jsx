@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
-import { FaSignOutAlt, FaCalendarAlt, FaEnvelope, FaCheck, FaTimes } from 'react-icons/fa';
+import { FaSignOutAlt, FaCalendarAlt, FaEnvelope, FaCheck, FaTimes, FaUtensils, FaTrash, FaEdit } from 'react-icons/fa';
+import { menuItems as staticMenuItems } from '../../data/menuData.js';
 import './AdminDashboard.css';
 
 const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState('bookings');
   const [bookings, setBookings] = useState([]);
   const [messages, setMessages] = useState([]);
+  const [menuItems, setMenuItems] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
 
@@ -24,9 +26,10 @@ const AdminDashboard = () => {
   const fetchData = async () => {
     setIsLoading(true);
     try {
-      const [bookingsRes, messagesRes] = await Promise.all([
+      const [bookingsRes, messagesRes, menuRes] = await Promise.all([
         fetch('/api/bookings', { headers: { Authorization: `Bearer ${token}` } }),
-        fetch('/api/contact', { headers: { Authorization: `Bearer ${token}` } })
+        fetch('/api/contact', { headers: { Authorization: `Bearer ${token}` } }),
+        fetch('/api/menu')
       ]);
 
       if (bookingsRes.status === 401 || messagesRes.status === 401) {
@@ -36,9 +39,11 @@ const AdminDashboard = () => {
 
       const bookingsData = await bookingsRes.json();
       const messagesData = await messagesRes.json();
+      const menuData = await menuRes.json();
 
       setBookings(bookingsData);
       setMessages(messagesData);
+      setMenuItems(menuData);
     } catch (err) {
       toast.error('Failed to load dashboard data');
     } finally {
@@ -90,6 +95,46 @@ const AdminDashboard = () => {
     }
   };
 
+  const handleSeedMenu = async () => {
+    setIsLoading(true);
+    try {
+      // Clean up static items to prevent _id conflicts
+      const cleanItems = staticMenuItems.map(({ id, ...rest }) => rest);
+      const res = await fetch('/api/menu/seed', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({ items: cleanItems })
+      });
+      if (res.ok) {
+        toast.success('Menu seeded with default data!');
+        fetchData();
+      }
+    } catch (err) {
+      toast.error('Failed to seed menu');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const deleteMenuItem = async (id) => {
+    if (!window.confirm('Are you sure you want to delete this dish?')) return;
+    try {
+      const res = await fetch(`/api/menu/${id}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (res.ok) {
+        toast.success('Dish deleted');
+        fetchData();
+      }
+    } catch (err) {
+      toast.error('Failed to delete dish');
+    }
+  };
+
   return (
     <div className="admin-dashboard">
       <aside className="admin-sidebar">
@@ -110,6 +155,12 @@ const AdminDashboard = () => {
           >
             <FaEnvelope /> Messages
           </button>
+          <button 
+            className={`admin-nav-btn ${activeTab === 'menu' ? 'active' : ''}`}
+            onClick={() => setActiveTab('menu')}
+          >
+            <FaUtensils /> Menu Editor
+          </button>
         </nav>
         <div className="admin-bottom">
           <button className="logout-btn" onClick={handleLogout}>
@@ -120,13 +171,15 @@ const AdminDashboard = () => {
 
       <main className="admin-main">
         <header className="admin-header">
-          <h1>{activeTab === 'bookings' ? 'Reservations' : 'Customer Messages'}</h1>
+          <h1>
+            {activeTab === 'bookings' && 'Reservations'}
+            {activeTab === 'messages' && 'Customer Messages'}
+            {activeTab === 'menu' && 'Menu Editor'}
+          </h1>
           <div className="admin-stats">
-            {activeTab === 'bookings' ? (
-              <span>Total: {bookings.length}</span>
-            ) : (
-              <span>Unread: {messages.filter(m => !m.isRead).length}</span>
-            )}
+            {activeTab === 'bookings' && <span>Total: {bookings.length}</span>}
+            {activeTab === 'messages' && <span>Unread: {messages.filter(m => !m.isRead).length}</span>}
+            {activeTab === 'menu' && <span>Live Dishes: {menuItems.length}</span>}
           </div>
         </header>
 
@@ -207,6 +260,60 @@ const AdminDashboard = () => {
               {messages.length === 0 && (
                 <div className="text-center w-100">No messages found</div>
               )}
+            </div>
+          ) : (
+            <div className="menu-editor-section">
+              <div className="menu-editor-actions" style={{ marginBottom: '1.5rem', display: 'flex', justifyContent: 'space-between' }}>
+                <button className="gold-cta" onClick={() => alert('Add New Dish UI Coming Soon!')}>+ Add New Dish</button>
+                {menuItems.length === 0 && (
+                  <button className="gold-cta" style={{ background: 'transparent', border: '1px solid var(--gold)' }} onClick={handleSeedMenu}>
+                    Seed Default Menu
+                  </button>
+                )}
+              </div>
+              <div className="table-responsive">
+                <table className="admin-table">
+                  <thead>
+                    <tr>
+                      <th>Dish Name</th>
+                      <th>Category</th>
+                      <th>Price</th>
+                      <th>Veg/Non-Veg</th>
+                      <th>Status</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {menuItems.map(item => (
+                      <tr key={item._id}>
+                        <td>
+                          <strong>{item.name}</strong><br/>
+                          <span className="text-small" style={{ display: 'inline-block', maxWidth: '250px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{item.description}</span>
+                        </td>
+                        <td style={{ textTransform: 'capitalize' }}>{item.category.replace('-', ' ')}</td>
+                        <td>₹{item.price}</td>
+                        <td>
+                          <span className={`status-badge ${item.isVeg ? 'confirmed' : 'cancelled'}`}>
+                            {item.isVeg ? 'Veg' : 'Non-Veg'}
+                          </span>
+                        </td>
+                        <td>
+                          <span className={`status-badge ${item.isAvailable ? 'confirmed' : 'pending'}`}>
+                            {item.isAvailable ? 'Live' : 'Sold Out'}
+                          </span>
+                        </td>
+                        <td className="actions-cell">
+                          <button className="action-btn" style={{ background: 'rgba(255,255,255,0.1)' }} onClick={() => alert('Edit UI Coming Soon!')}><FaEdit /></button>
+                          <button onClick={() => deleteMenuItem(item._id)} className="action-btn cancel"><FaTrash /></button>
+                        </td>
+                      </tr>
+                    ))}
+                    {menuItems.length === 0 && (
+                      <tr><td colSpan="6" className="text-center">No menu items in database. Click "Seed Default Menu" above.</td></tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
             </div>
           )}
         </div>

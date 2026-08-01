@@ -35,3 +35,11 @@ export const deleteMenuItem = asyncHandler(async (req, res) => {
   }
   res.status(200).json({ message: 'Menu item removed' });
 });
+
+export const seedMenuItems = asyncHandler(async (req, res) => {
+  // We'll import the data here to avoid frontend/backend coupling if possible
+  // For now we accept the data from the body
+  await MenuItem.deleteMany({});
+  const items = await MenuItem.insertMany(req.body.items);
+  res.status(201).json({ message: 'Menu seeded successfully', count: items.length });
+});

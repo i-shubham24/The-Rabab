@@ -8,14 +8,32 @@ import { menuItems as dataItems, menuCategories } from '../data/menuData';
 import './Menu.css';
 
 const Menu = () => {
-  // Fallback data if import fails
-  const items = dataItems || [];
   const categories = menuCategories || ['Starters', 'Main Course', 'Breads', 'Desserts', 'Beverages'];
 
+  const [items, setItems] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [activeCategory, setActiveCategory] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
   const [vegFilter, setVegFilter] = useState('all'); // all, veg, non-veg
   const [spiceFilter, setSpiceFilter] = useState('all');
+
+  useEffect(() => {
+    const fetchMenu = async () => {
+      try {
+        setIsLoading(true);
+        const res = await fetch('/api/menu');
+        const data = await res.json();
+        // Fallback to static if backend fails
+        setItems(data.length > 0 ? data : dataItems);
+      } catch (error) {
+        console.error('Failed to fetch menu:', error);
+        setItems(dataItems);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchMenu();
+  }, []);
 
   const filteredMenu = items.filter(item => {
     // Category filter
@@ -73,9 +91,13 @@ const Menu = () => {
 
         <div className="menu-grid">
           <AnimatePresence>
-            {filteredMenu.length > 0 ? (
+            {isLoading ? (
+              <div className="menu-empty-state" style={{ padding: '4rem', width: '100%' }}>
+                <p>Loading the royal feast...</p>
+              </div>
+            ) : filteredMenu.length > 0 ? (
               filteredMenu.map((item, index) => (
-                <MenuCard key={item.id || index} item={item} />
+                <MenuCard key={item._id || item.id || index} item={item} />
               ))
             ) : (
               <motion.div 
