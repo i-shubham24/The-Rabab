@@ -13,6 +13,12 @@ const connectToDatabase = async () => {
   return db;
 };
 
+export const config = {
+  api: {
+    bodyParser: false,
+  },
+};
+
 // Vercel serverless function entrypoint
 export default async function handler(req, res) {
   await connectToDatabase();
