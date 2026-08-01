@@ -11,6 +11,15 @@ const AdminDashboard = () => {
   const [messages, setMessages] = useState([]);
   const [menuItems, setMenuItems] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  
+  // Menu Modal State
+  const [showMenuModal, setShowMenuModal] = useState(false);
+  const [editingDish, setEditingDish] = useState(null);
+  const [dishFormData, setDishFormData] = useState({
+    name: '', description: '', price: '', category: 'starters',
+    isVeg: true, isAvailable: true, image: '/images/food/dal-makhani.jpg'
+  });
+
   const navigate = useNavigate();
 
   const token = localStorage.getItem('adminToken');
@@ -132,6 +141,51 @@ const AdminDashboard = () => {
       }
     } catch (err) {
       toast.error('Failed to delete dish');
+    }
+  };
+
+  const openMenuModal = (dish = null) => {
+    if (dish) {
+      setEditingDish(dish);
+      setDishFormData({
+        name: dish.name, description: dish.description, price: dish.price,
+        category: dish.category, isVeg: dish.isVeg, isAvailable: dish.isAvailable, image: dish.image || ''
+      });
+    } else {
+      setEditingDish(null);
+      setDishFormData({
+        name: '', description: '', price: '', category: 'starters',
+        isVeg: true, isAvailable: true, image: '/images/food/dal-makhani.jpg'
+      });
+    }
+    setShowMenuModal(true);
+  };
+
+  const handleSaveDish = async (e) => {
+    e.preventDefault();
+    const url = editingDish ? `/api/menu/${editingDish._id}` : '/api/menu';
+    const method = editingDish ? 'PUT' : 'POST';
+
+    try {
+      const res = await fetch(url, {
+        method,
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify(dishFormData)
+      });
+
+      if (res.ok) {
+        toast.success(editingDish ? 'Dish updated!' : 'Dish added!');
+        setShowMenuModal(false);
+        fetchData();
+      } else {
+        const errorData = await res.json();
+        toast.error(errorData.message || 'Failed to save dish');
+      }
+    } catch (err) {
+      toast.error('An error occurred while saving the dish');
     }
   };
 
@@ -264,7 +318,7 @@ const AdminDashboard = () => {
           ) : (
             <div className="menu-editor-section">
               <div className="menu-editor-actions" style={{ marginBottom: '1.5rem', display: 'flex', justifyContent: 'space-between' }}>
-                <button className="gold-cta" onClick={() => alert('Add New Dish UI Coming Soon!')}>+ Add New Dish</button>
+                <button className="gold-cta" onClick={() => openMenuModal()}>+ Add New Dish</button>
                 {menuItems.length === 0 && (
                   <button className="gold-cta" style={{ background: 'transparent', border: '1px solid var(--gold)' }} onClick={handleSeedMenu}>
                     Seed Default Menu
@@ -303,7 +357,7 @@ const AdminDashboard = () => {
                           </span>
                         </td>
                         <td className="actions-cell">
-                          <button className="action-btn" style={{ background: 'rgba(255,255,255,0.1)' }} onClick={() => alert('Edit UI Coming Soon!')}><FaEdit /></button>
+                          <button className="action-btn" style={{ background: 'rgba(255,255,255,0.1)' }} onClick={() => openMenuModal(item)}><FaEdit /></button>
                           <button onClick={() => deleteMenuItem(item._id)} className="action-btn cancel"><FaTrash /></button>
                         </td>
                       </tr>
@@ -318,6 +372,68 @@ const AdminDashboard = () => {
           )}
         </div>
       </main>
+
+      {/* Menu Modal */}
+      {showMenuModal && (
+        <div className="modal-overlay">
+          <div className="modal-content glass-card">
+            <div className="modal-header">
+              <h2>{editingDish ? 'Edit Dish' : 'Add New Dish'}</h2>
+              <button className="close-btn" onClick={() => setShowMenuModal(false)}><FaTimes /></button>
+            </div>
+            <form onSubmit={handleSaveDish} className="modal-form">
+              <div className="form-row">
+                <div className="input-group">
+                  <label>Dish Name</label>
+                  <input type="text" className="input-field" required value={dishFormData.name} onChange={e => setDishFormData({...dishFormData, name: e.target.value})} />
+                </div>
+                <div className="input-group">
+                  <label>Price (₹)</label>
+                  <input type="number" className="input-field" required value={dishFormData.price} onChange={e => setDishFormData({...dishFormData, price: e.target.value})} />
+                </div>
+              </div>
+              <div className="input-group">
+                <label>Description</label>
+                <textarea className="input-field" rows="2" required value={dishFormData.description} onChange={e => setDishFormData({...dishFormData, description: e.target.value})}></textarea>
+              </div>
+              <div className="form-row">
+                <div className="input-group">
+                  <label>Category</label>
+                  <select className="input-field" value={dishFormData.category} onChange={e => setDishFormData({...dishFormData, category: e.target.value})}>
+                    <option value="starters">Starters</option>
+                    <option value="soups">Soups</option>
+                    <option value="tandoor">Tandoor</option>
+                    <option value="main-veg">Main Course - Veg</option>
+                    <option value="main-nonveg">Main Course - Non Veg</option>
+                    <option value="biryani">Biryani</option>
+                    <option value="breads">Breads</option>
+                    <option value="desserts">Desserts</option>
+                    <option value="beverages">Beverages</option>
+                    <option value="cocktails">Cocktails</option>
+                  </select>
+                </div>
+                <div className="input-group">
+                  <label>Image URL</label>
+                  <input type="text" className="input-field" value={dishFormData.image} onChange={e => setDishFormData({...dishFormData, image: e.target.value})} />
+                </div>
+              </div>
+              <div className="form-row checkbox-row">
+                <label className="checkbox-label">
+                  <input type="checkbox" checked={dishFormData.isVeg} onChange={e => setDishFormData({...dishFormData, isVeg: e.target.checked})} />
+                  Vegetarian
+                </label>
+                <label className="checkbox-label">
+                  <input type="checkbox" checked={dishFormData.isAvailable} onChange={e => setDishFormData({...dishFormData, isAvailable: e.target.checked})} />
+                  Available (Live)
+                </label>
+              </div>
+              <button type="submit" className="gold-cta" style={{ width: '100%', marginTop: '1rem' }}>
+                {editingDish ? 'Update Dish' : 'Create Dish'}
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
