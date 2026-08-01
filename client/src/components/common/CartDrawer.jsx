@@ -74,9 +74,11 @@ const CartDrawer = () => {
                   <span>Total</span>
                   <span>₹{getCartTotal()}</span>
                 </div>
-                <button className="btn-primary checkout-btn" onClick={handleCheckout}>
-                  Proceed to Checkout
-                </button>
+                <div style={{ textAlign: 'center' }}>
+                  <button className="gold-cta" onClick={handleCheckout} style={{ borderRadius: '8px', padding: '0.6rem 1.5rem', width: 'auto' }}>
+                    Proceed to Checkout
+                  </button>
+                </div>
               </div>
             )}
           </motion.div>

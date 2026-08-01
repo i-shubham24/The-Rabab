@@ -239,9 +239,11 @@ const Checkout = () => {
                 <textarea name="specialInstructions" value={formData.specialInstructions} onChange={handleChange} className="input-field" rows="2"></textarea>
               </div>
               
-              <button type="submit" className="btn-primary w-full" disabled={isSubmitting}>
-                {isSubmitting ? 'Processing...' : 'Place Order'}
-              </button>
+              <div style={{ textAlign: 'center', marginTop: '1.5rem' }}>
+                <button type="submit" className="gold-cta" style={{ borderRadius: '8px', padding: '0.8rem 2rem' }} disabled={isSubmitting}>
+                  {isSubmitting ? 'Processing...' : 'Place Order'}
+                </button>
+              </div>
             </form>
           </motion.div>
 
