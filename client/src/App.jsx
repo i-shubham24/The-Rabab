@@ -8,6 +8,7 @@ import Loader from './components/common/Loader';
 import { AuthProvider } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
 import CartDrawer from './components/common/CartDrawer';
+import ChatWidget from './components/common/ChatWidget';
 import './styles/index.css';
 
 // Lazy-loaded pages for code-splitting
@@ -50,6 +51,7 @@ const AppContent = () => {
         </Suspense>
       </main>
       {!isAdminRoute && <Footer />}
+      {!isAdminRoute && <ChatWidget />}
     </>
   );
 };

@@ -17,6 +17,7 @@ import authRoutes from './routes/authRoutes.js';
 import reviewRoutes from './routes/reviewRoutes.js';
 import orderRoutes from './routes/orderRoutes.js';
 import paymentRoutes from './routes/paymentRoutes.js';
+import chatRoutes from './routes/chatRoutes.js';
 
 const app = express();
 
@@ -53,6 +54,7 @@ app.use('/api/contact', contactRoutes);
 app.use('/api/reviews', reviewRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/payments', paymentRoutes);
+app.use('/api/chat', chatRoutes);
 
 // Base Route
 app.get('/', (req, res) => {
