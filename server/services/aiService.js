@@ -1,6 +1,6 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import env from '../config/env.js';
-import Menu from '../models/Menu.js';
+import MenuItem from '../models/MenuItem.js';
 import Booking from '../models/Booking.js';
 import restaurantConfig from '../config/restaurantConfig.js';
 
@@ -21,7 +21,7 @@ const getMenuData = async () => {
   if (menuCache && now - menuCacheTime < 10 * 60 * 1000) return menuCache;
   
   try {
-    const items = await Menu.find({ isAvailable: true }).lean();
+    const items = await MenuItem.find({ isAvailable: true }).lean();
     menuCache = items.map(i => ({
       name: i.name,
       price: i.price,
