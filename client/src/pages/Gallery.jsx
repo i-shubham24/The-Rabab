@@ -95,14 +95,14 @@ const fallbackGallery = [
         </div>
 
         {/* Masonry Grid */}
-        <motion.div layout className="gallery-masonry">
-          <AnimatePresence mode="wait">
-            {isLoading ? (
-              <motion.div key="loading" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="text-center w-100" style={{ padding: '4rem', color: '#fff' }}>Loading gallery...</motion.div>
-            ) : filteredGallery.length === 0 ? (
-              <motion.div key="empty" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="text-center w-100" style={{ padding: '4rem', color: '#fff' }}>No images found.</motion.div>
-            ) : (
-              filteredGallery.map((item, index) => (
+        <div className="gallery-masonry">
+          {isLoading ? (
+            <div className="text-center w-100" style={{ padding: '4rem', color: '#fff' }}>Loading gallery...</div>
+          ) : filteredGallery.length === 0 ? (
+            <div className="text-center w-100" style={{ padding: '4rem', color: '#fff' }}>No images found.</div>
+          ) : (
+            <AnimatePresence>
+              {filteredGallery.map((item, index) => (
                 <motion.div
                   key={item._id || item.id || `gallery-item-${index}`}
                   layout
@@ -122,10 +122,10 @@ const fallbackGallery = [
                     </div>
                   </div>
                 </motion.div>
-              ))
-            )}
-          </AnimatePresence>
-        </motion.div>
+              ))}
+            </AnimatePresence>
+          )}
+        </div>
       </section>
 
       {/* Lightbox Modal */}

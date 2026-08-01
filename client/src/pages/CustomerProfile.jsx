@@ -84,7 +84,7 @@ const CustomerProfile = () => {
 
       <div className="profile-container container">
         <aside className="profile-sidebar">
-          <div className="points-card glass-card">
+          <div className="points-card">
             <FaCrown className="crown-icon" />
             <h2>Royal Points</h2>
             <div className="points-balance">{user.loyaltyPoints}</div>
@@ -100,13 +100,13 @@ const CustomerProfile = () => {
           <h2 className="section-title">My Reservations</h2>
           <div className="bookings-grid">
             {bookings.length === 0 ? (
-              <div className="glass-card text-center p-4">
+              <div className="text-center p-4">
                 <p>You have no reservations yet.</p>
                 <button className="gold-cta mt-4" onClick={() => navigate('/booking')}>Book a Table</button>
               </div>
             ) : (
               bookings.map(booking => (
-                <div key={booking._id} className="booking-card glass-card">
+                <div key={booking._id} className="booking-card" style={{ borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '1rem' }}>
                   <div className="booking-header">
                     <FaCalendarAlt className="calendar-icon" />
                     <span className={`status-badge ${booking.status.toLowerCase()}`}>{booking.status}</span>
@@ -128,7 +128,7 @@ const CustomerProfile = () => {
 
           <div style={{ marginTop: '3rem' }}>
             <h2 className="section-title">Leave a Review</h2>
-            <form onSubmit={handleReviewSubmit} className="glass-card" style={{ padding: '2rem' }}>
+            <form onSubmit={handleReviewSubmit} style={{ padding: '1rem 0' }}>
               {reviewSubmitStatus === 'success' ? (
                 <div style={{ color: 'var(--gold)', textAlign: 'center' }}>
                   <FaStar size={30} style={{ marginBottom: '1rem' }} />

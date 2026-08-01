@@ -442,7 +442,7 @@ h1, h2, h3, h4, h5, h6 {
   letter-spacing: var(--ls-wider);
   text-transform: uppercase;
   padding: 12px 24px;
-  border-radius: 50px;
+  border-radius: 4px;
   transition: all var(--transition-base);
   position: relative;
   overflow: hidden;
