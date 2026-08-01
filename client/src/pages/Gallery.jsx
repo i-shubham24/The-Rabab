@@ -104,7 +104,7 @@ const fallbackGallery = [
             <AnimatePresence>
               {filteredGallery.map((item, index) => (
                 <motion.div
-                  key={item._id || item.id || `gallery-item-${index}`}
+                  key={item._id || item.id || `gallery-item-${index}-${item.title}`}
                   layout
                   initial={{ opacity: 0, scale: 0.8 }}
                   animate={{ opacity: 1, scale: 1 }}
@@ -146,20 +146,22 @@ const fallbackGallery = [
                 <FaChevronLeft />
               </button>
               
-              <motion.div 
-                className="lightbox-image-container"
-                key={selectedImage._id || selectedImage.id}
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.9 }}
-                transition={{ duration: 0.3 }}
-              >
-                <img src={selectedImage.mediaUrl || selectedImage.src} alt={selectedImage.title || selectedImage.caption} className="lightbox-image" />
-                <div className="lightbox-caption">
-                  <h2>{selectedImage.title || selectedImage.caption}</h2>
-                  <p>{selectedImage.category}</p>
-                </div>
-              </motion.div>
+              <AnimatePresence mode="wait">
+                <motion.div 
+                  className="lightbox-image-container"
+                  key={selectedImage._id || selectedImage.id || currentIndex}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.9 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <img src={selectedImage.mediaUrl || selectedImage.src} alt={selectedImage.title || selectedImage.caption} className="lightbox-image" />
+                  <div className="lightbox-caption">
+                    <h2>{selectedImage.title || selectedImage.caption}</h2>
+                    <p>{selectedImage.category}</p>
+                  </div>
+                </motion.div>
+              </AnimatePresence>
               
               <button className="lightbox-nav next" onClick={(e) => { e.stopPropagation(); navigateLightbox(1); }}>
                 <FaChevronRight />
