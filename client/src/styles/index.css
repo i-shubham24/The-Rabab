@@ -437,12 +437,12 @@ h1, h2, h3, h4, h5, h6 {
   justify-content: center;
   gap: var(--space-sm);
   font-family: var(--font-accent);
-  font-size: var(--fs-small);
+  font-size: 0.8rem;
   font-weight: var(--fw-semibold);
   letter-spacing: var(--ls-wider);
   text-transform: uppercase;
-  padding: var(--space-md) var(--space-2xl);
-  border-radius: var(--radius-sm);
+  padding: 12px 24px;
+  border-radius: 50px;
   transition: all var(--transition-base);
   position: relative;
   overflow: hidden;

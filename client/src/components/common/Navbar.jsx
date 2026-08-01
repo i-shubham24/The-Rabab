@@ -153,9 +153,6 @@ const Navbar = () => {
                 <a href="tel:+917900324000" className="btn btn-outline w-full">
                   <FaPhone /> Call +91 7900324000
                 </a>
-                <Link to="/booking" className="btn btn-gold w-full">
-                  Book a Table
-                </Link>
               </div>
               <div className="navbar__mobile-social">
                 <a href="https://instagram.com/therababrayya" target="_blank" rel="noopener noreferrer">

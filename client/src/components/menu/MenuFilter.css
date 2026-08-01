@@ -1,9 +1,9 @@
 .menu-filter-container {
   background: var(--cream, #F5F0E8);
-  padding: 20px;
+  padding: 15px 20px;
   border-radius: 12px;
   box-shadow: 0 4px 20px rgba(0,0,0,0.05);
-  margin-bottom: 30px;
+  margin-bottom: 20px;
   position: sticky;
   top: 80px;
   z-index: 100;
@@ -12,7 +12,7 @@
 
 .menu-search-bar {
   position: relative;
-  margin-bottom: 20px;
+  margin-bottom: 12px;
 }
 
 .search-icon {
@@ -103,9 +103,11 @@
 .filter-btn {
   background: transparent;
   border: none;
-  padding: 8px 15px;
+  padding: 6px 12px;
   border-radius: 15px;
   font-family: 'Inter', sans-serif;
+  color: var(--charcoal, #1A1A1A);
+  font-weight: 500;
   cursor: pointer;
   display: flex;
   align-items: center;
