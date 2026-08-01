@@ -229,7 +229,7 @@ const AdminDashboard = () => {
                 </tbody>
               </table>
             </div>
-          ) : (
+          ) : activeTab === 'messages' ? (
             <div className="messages-grid">
               {messages.map(msg => (
                 <div key={msg._id} className={`message-card ${msg.isRead ? 'read' : 'unread'}`}>

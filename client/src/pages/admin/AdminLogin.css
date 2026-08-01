@@ -47,6 +47,30 @@
   border-radius: 4px;
 }
 
+.password-group {
+  position: relative;
+}
+
+.password-toggle {
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: var(--text-light);
+  cursor: pointer;
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.3s ease;
+}
+
+.password-toggle:hover {
+  color: var(--gold);
+}
+
 .admin-login-form .gold-cta {
   width: 100%;
   padding: 1rem;

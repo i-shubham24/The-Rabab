@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import toast from 'react-hot-toast';
 import './AdminLogin.css';
 
 const AdminLogin = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -55,15 +57,22 @@ const AdminLogin = () => {
               required 
             />
           </div>
-          <div className="input-group">
+          <div className="input-group password-group">
             <input 
-              type="password" 
+              type={showPassword ? "text" : "password"} 
               placeholder="Password" 
               className="input-field"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required 
             />
+            <button 
+              type="button" 
+              className="password-toggle"
+              onClick={() => setShowPassword(!showPassword)}
+            >
+              {showPassword ? <FaEyeSlash /> : <FaEye />}
+            </button>
           </div>
           <button type="submit" className="gold-cta" disabled={isLoading}>
             {isLoading ? 'Authenticating...' : 'Secure Login'}
