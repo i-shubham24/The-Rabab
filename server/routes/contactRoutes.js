@@ -1,8 +1,10 @@
 import express from 'express';
-import { submitContactForm } from '../controllers/contactController.js';
+import { submitContactForm, getContacts, updateContactStatus } from '../controllers/contactController.js';
+import { protect } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
-router.post('/', submitContactForm);
+router.route('/').post(submitContactForm).get(protect, getContacts);
+router.route('/:id').put(protect, updateContactStatus);
 
 export default router;

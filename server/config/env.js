@@ -8,6 +8,8 @@ const env = {
   jwtSecret: process.env.JWT_SECRET || 'fallback_secret',
   jwtExpiresIn: process.env.JWT_EXPIRES_IN || '30d',
   frontendUrl: process.env.FRONTEND_URL || 'http://localhost:5173',
+  adminEmail: process.env.ADMIN_EMAIL || 'admin@majesticrabab.com',
+  adminPassword: process.env.ADMIN_PASSWORD || 'RababAdmin2026',
 };
 
 export default env;
