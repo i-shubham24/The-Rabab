@@ -25,9 +25,30 @@ const Booking = () => {
     setFormData({ ...formData, partySize: size });
   };
 
-  const handleSubmit = (e) => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState(null);
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setIsSubmitted(true);
+    setIsSubmitting(true);
+    setError(null);
+    try {
+      const response = await fetch('/api/bookings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...formData,
+          partySize: parseInt(formData.partySize) || 2 // Backend expects number
+        })
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message || 'Something went wrong');
+      setIsSubmitted(true);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const fadeUp = {
@@ -159,7 +180,11 @@ const Booking = () => {
                 <textarea name="requests" className="input-field" rows="3" placeholder="Special Requests (Optional)" onChange={handleChange}></textarea>
               </div>
 
-              <button type="submit" className="gold-cta submit-btn">Confirm Reservation</button>
+              {error && <p className="error-message" style={{ color: '#ff4d4d', marginTop: '10px' }}>{error}</p>}
+
+              <button type="submit" className="gold-cta submit-btn" disabled={isSubmitting}>
+                {isSubmitting ? 'Confirming...' : 'Confirm Reservation'}
+              </button>
             </form>
           </motion.div>
         ) : (

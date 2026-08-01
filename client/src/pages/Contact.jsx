@@ -16,11 +16,29 @@ const Contact = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [status, setStatus] = useState({ type: '', message: '' });
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Handle form submission
-    console.log(formData);
-    alert('Message Sent!');
+    setIsSubmitting(true);
+    setStatus({ type: '', message: '' });
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message || 'Something went wrong');
+      setStatus({ type: 'success', message: 'Message sent successfully! We will get back to you soon.' });
+      setFormData({ name: '', email: '', phone: '', subject: 'General', message: '' });
+      e.target.reset(); // Reset form inputs visually
+    } catch (err) {
+      setStatus({ type: 'error', message: err.message });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const fadeUp = {
@@ -73,7 +91,16 @@ const Contact = () => {
             <div className="input-group">
               <textarea name="message" className="input-field" rows="5" placeholder="Your Message" required onChange={handleChange}></textarea>
             </div>
-            <button type="submit" className="gold-cta">Send Message</button>
+            
+            {status.message && (
+              <p style={{ color: status.type === 'error' ? '#ff4d4d' : '#4CAF50', marginTop: '10px' }}>
+                {status.message}
+              </p>
+            )}
+
+            <button type="submit" className="gold-cta" disabled={isSubmitting}>
+              {isSubmitting ? 'Sending...' : 'Send Message'}
+            </button>
           </form>
         </motion.div>
 
