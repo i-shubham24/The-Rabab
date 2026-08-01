@@ -777,6 +777,30 @@ textarea.input-field {
   resize: vertical;
 }
 
+.password-group {
+  position: relative;
+}
+
+.password-toggle {
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: var(--text-light, var(--charcoal-300));
+  cursor: pointer;
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.3s ease;
+}
+
+.password-toggle:hover {
+  color: var(--gold);
+}
+
 
 /* ─── Badge / Tag System ─── */
 .badge {

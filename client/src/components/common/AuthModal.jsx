@@ -1,11 +1,12 @@
 import React, { useState, useContext } from 'react';
 import { motion } from 'framer-motion';
-import { FaTimes, FaCrown } from 'react-icons/fa';
+import { FaTimes, FaCrown, FaEye, FaEyeSlash } from 'react-icons/fa';
 import { AuthContext } from '../../context/AuthContext';
 import './AuthModal.css';
 
 const AuthModal = ({ isOpen, onClose }) => {
   const [isLogin, setIsLogin] = useState(true);
+  const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     name: '', email: '', phone: '', password: ''
   });
@@ -79,15 +80,22 @@ const AuthModal = ({ isOpen, onClose }) => {
               className="input-field"
             />
           </div>
-          <div className="input-group">
+          <div className="input-group password-group">
             <input 
-              type="password" 
+              type={showPassword ? "text" : "password"} 
               placeholder="Password" 
               required 
               value={formData.password}
               onChange={e => setFormData({...formData, password: e.target.value})}
               className="input-field"
             />
+            <button 
+              type="button" 
+              className="password-toggle"
+              onClick={() => setShowPassword(!showPassword)}
+            >
+              {showPassword ? <FaEyeSlash /> : <FaEye />}
+            </button>
           </div>
 
           <button type="submit" className="gold-cta w-full">
