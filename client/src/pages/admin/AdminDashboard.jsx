@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
-import { FaSignOutAlt, FaCalendarAlt, FaEnvelope, FaCheck, FaTimes, FaUtensils, FaTrash, FaEdit, FaImage, FaStar, FaImages } from 'react-icons/fa';
+import { FaSignOutAlt, FaCalendarAlt, FaEnvelope, FaCheck, FaTimes, FaUtensils, FaTrash, FaEdit, FaImage, FaStar, FaImages, FaShoppingBag } from 'react-icons/fa';
 import { menuItems as staticMenuItems } from '../../data/menuData.js';
 import './AdminDashboard.css';
 
@@ -10,6 +10,7 @@ const AdminDashboard = () => {
   const [bookings, setBookings] = useState([]);
   const [messages, setMessages] = useState([]);
   const [reviews, setReviews] = useState([]);
+  const [orders, setOrders] = useState([]);
   const [menuItems, setMenuItems] = useState([]);
   const [galleryItems, setGalleryItems] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -43,12 +44,13 @@ const AdminDashboard = () => {
   const fetchData = async () => {
     setIsLoading(true);
     try {
-      const [bookingsRes, messagesRes, menuRes, galleryRes, reviewsRes] = await Promise.all([
+      const [bookingsRes, messagesRes, menuRes, galleryRes, reviewsRes, ordersRes] = await Promise.all([
         fetch('/api/bookings', { headers: { Authorization: `Bearer ${token}` } }),
         fetch('/api/contact', { headers: { Authorization: `Bearer ${token}` } }),
         fetch('/api/menu'),
         fetch('/api/gallery'),
-        fetch('/api/reviews/admin', { headers: { Authorization: `Bearer ${token}` } })
+        fetch('/api/reviews/admin', { headers: { Authorization: `Bearer ${token}` } }),
+        fetch('/api/orders/admin', { headers: { Authorization: `Bearer ${token}` } })
       ]);
 
       if (bookingsRes.status === 401 || messagesRes.status === 401) {
@@ -61,12 +63,14 @@ const AdminDashboard = () => {
       const menuData = await menuRes.json();
       const galleryData = await galleryRes.json();
       const reviewsData = await reviewsRes.json();
+      const ordersData = await ordersRes.json();
 
       setBookings(bookingsData);
       setMessages(messagesData);
       setMenuItems(menuData);
       setGalleryItems(galleryData);
       setReviews(reviewsData);
+      setOrders(ordersData);
     } catch (err) {
       toast.error('Failed to load dashboard data');
     } finally {
@@ -136,6 +140,26 @@ const AdminDashboard = () => {
       }
     } catch (err) {
       toast.error('Failed to update review status');
+    }
+  };
+
+  const handleUpdateOrderStatus = async (id, status) => {
+    try {
+      const res = await fetch(`/api/orders/${id}/status`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({ status })
+      });
+      const data = await res.json();
+      if(res.ok) {
+        setOrders(orders.map(o => o._id === id ? data : o));
+        toast.success(`Order status updated to ${status}`);
+      }
+    } catch (err) {
+      toast.error('Failed to update order status');
     }
   };
 
@@ -328,6 +352,12 @@ const AdminDashboard = () => {
           >
             <FaStar /> Reviews
           </button>
+          <button 
+            className={`admin-nav-btn ${activeTab === 'orders' ? 'active' : ''}`}
+            onClick={() => setActiveTab('orders')}
+          >
+            <FaShoppingBag /> Orders
+          </button>
         </nav>
         <div className="admin-bottom">
           <button className="logout-btn" onClick={handleLogout}>
@@ -344,6 +374,7 @@ const AdminDashboard = () => {
             {activeTab === 'menu' && 'Menu Editor'}
             {activeTab === 'gallery' && 'Gallery CMS'}
             {activeTab === 'reviews' && 'Reviews'}
+            {activeTab === 'orders' && 'Online Orders'}
           </h1>
           <div className="admin-stats">
             {activeTab === 'bookings' && <span>Total: {bookings.length}</span>}
@@ -351,6 +382,7 @@ const AdminDashboard = () => {
             {activeTab === 'menu' && <span>Live Dishes: {menuItems.length}</span>}
             {activeTab === 'gallery' && <span>Photos: {galleryItems.length}</span>}
             {activeTab === 'reviews' && <span>Pending: {reviews.filter(r => r.status === 'Pending').length}</span>}
+            {activeTab === 'orders' && <span>Active: {orders.filter(o => o.status !== 'Completed' && o.status !== 'Cancelled').length}</span>}
           </div>
         </header>
 
@@ -518,7 +550,7 @@ const AdminDashboard = () => {
                 )}
               </div>
             </div>
-          ) : (
+          ) : activeTab === 'reviews' ? (
             <div className="tab-content">
               <h2>Review Management</h2>
               <div className="messages-grid">
@@ -544,7 +576,68 @@ const AdminDashboard = () => {
                 ))}
               </div>
             </div>
-          )}
+          ) : activeTab === 'orders' ? (
+            <div className="tab-content">
+              <h2>Order Management</h2>
+              <div className="table-responsive">
+                <table className="admin-table">
+                  <thead>
+                    <tr>
+                      <th>Order ID</th>
+                      <th>Customer Details</th>
+                      <th>Type & Address</th>
+                      <th>Total</th>
+                      <th>Status</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {orders.map(order => (
+                      <tr key={order._id}>
+                        <td>
+                          <span style={{ fontSize: '0.8rem', color: 'var(--gold)' }}>#{order._id.substring(order._id.length - 6)}</span><br/>
+                          <span style={{ fontSize: '0.75rem' }}>{new Date(order.createdAt).toLocaleString()}</span>
+                        </td>
+                        <td>
+                          <strong>{order.customerDetails?.name}</strong><br/>
+                          <span className="text-small">{order.customerDetails?.phone}</span>
+                        </td>
+                        <td>
+                          <span className="badge badge-featured">{order.fulfillmentType}</span><br/>
+                          {order.fulfillmentType === 'Delivery' && (
+                            <span className="text-small" style={{ display: 'inline-block', maxWidth: '200px' }}>{order.deliveryAddress}</span>
+                          )}
+                        </td>
+                        <td><strong>₹{order.totalAmount}</strong></td>
+                        <td>
+                          <span className={`status-badge ${order.status.toLowerCase()}`}>
+                            {order.status}
+                          </span>
+                        </td>
+                        <td>
+                          <select 
+                            className="input-field" 
+                            style={{ padding: '4px 8px', width: 'auto' }}
+                            value={order.status}
+                            onChange={(e) => handleUpdateOrderStatus(order._id, e.target.value)}
+                          >
+                            <option value="Pending">Pending</option>
+                            <option value="Preparing">Preparing</option>
+                            <option value="Ready">Ready / Out for Delivery</option>
+                            <option value="Completed">Completed</option>
+                            <option value="Cancelled">Cancelled</option>
+                          </select>
+                        </td>
+                      </tr>
+                    ))}
+                    {orders.length === 0 && (
+                      <tr><td colSpan="6" className="text-center">No orders found.</td></tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          ) : null}
         </div>
       </main>
 

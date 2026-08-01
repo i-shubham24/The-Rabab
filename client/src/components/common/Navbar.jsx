@@ -1,8 +1,9 @@
 import { useState, useEffect, useContext } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FaBars, FaTimes, FaPhone, FaInstagram, FaUser } from 'react-icons/fa';
+import { FaBars, FaTimes, FaPhone, FaInstagram, FaUser, FaShoppingCart } from 'react-icons/fa';
 import { AuthContext } from '../../context/AuthContext';
+import { CartContext } from '../../context/CartContext';
 import AuthModal from './AuthModal';
 import './Navbar.css';
 
@@ -20,6 +21,7 @@ const Navbar = () => {
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const { user, logout } = useContext(AuthContext);
+  const { getCartCount, setIsCartOpen } = useContext(CartContext);
   const location = useLocation();
 
   useEffect(() => {
@@ -108,6 +110,18 @@ const Navbar = () => {
               <FaUser />
             </button>
           )}
+          <button 
+            className="navbar__cart-btn" 
+            onClick={() => setIsCartOpen(true)}
+            style={{ background: 'none', border: 'none', color: '#fff', fontSize: '1.2rem', cursor: 'pointer', margin: '0 15px', position: 'relative' }}
+          >
+            <FaShoppingCart />
+            {getCartCount() > 0 && (
+              <span style={{ position: 'absolute', top: '-8px', right: '-8px', background: 'var(--gold)', color: 'var(--charcoal)', fontSize: '0.7rem', fontWeight: 'bold', padding: '2px 6px', borderRadius: '50%' }}>
+                {getCartCount()}
+              </span>
+            )}
+          </button>
           <Link to="/booking" className="btn btn-gold btn-sm navbar__cta">
             Book a Table
           </Link>

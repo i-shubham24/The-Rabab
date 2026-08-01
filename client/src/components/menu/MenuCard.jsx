@@ -1,10 +1,12 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { motion } from 'framer-motion';
 import { FaFire, FaStar, FaSeedling, FaShoppingCart } from 'react-icons/fa';
+import { CartContext } from '../../context/CartContext';
 import './MenuCard.css';
 
 const MenuCard = ({ item }) => {
   const { name, description, price, image, isVeg, spiceLevel, isFeatured, allergens } = item;
+  const { addToCart } = useContext(CartContext);
 
   return (
     <motion.div 
@@ -53,8 +55,8 @@ const MenuCard = ({ item }) => {
                 ))}
               </div>
             )}
-            <button className="add-to-cart-btn" disabled>
-              <FaShoppingCart /> Add
+            <button className="add-to-cart-btn gold-cta" onClick={() => addToCart(item)} style={{ padding: '0.4rem 0.8rem', fontSize: '0.8rem' }}>
+              <FaShoppingCart style={{ marginRight: '5px' }} /> Add
             </button>
           </div>
         </div>
