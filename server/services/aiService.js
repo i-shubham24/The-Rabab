@@ -96,7 +96,7 @@ export const getChatResponse = async (messages, mode = 'support') => {
       contextInfo = `\n\nTODAY'S AVAILABILITY (${today}):\n${availInfo}\nMax capacity per slot: ${restaurantConfig.maxCoversPerSlot} covers`;
     }
 
-    const model = ai.getGenerativeModel({ model: 'gemini-2.0-flash' });
+    const model = ai.getGenerativeModel({ model: 'gemini-3.5-flash-lite' });
 
     const chat = model.startChat({
       history: messages.slice(0, -1).map(m => ({
