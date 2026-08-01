@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
-import { FaSignOutAlt, FaCalendarAlt, FaEnvelope, FaCheck, FaTimes, FaUtensils, FaTrash, FaEdit, FaImage } from 'react-icons/fa';
+import { FaSignOutAlt, FaCalendarAlt, FaEnvelope, FaCheck, FaTimes, FaUtensils, FaTrash, FaEdit, FaImage, FaStar, FaImages } from 'react-icons/fa';
 import { menuItems as staticMenuItems } from '../../data/menuData.js';
 import './AdminDashboard.css';
 
@@ -9,6 +9,7 @@ const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState('bookings');
   const [bookings, setBookings] = useState([]);
   const [messages, setMessages] = useState([]);
+  const [reviews, setReviews] = useState([]);
   const [menuItems, setMenuItems] = useState([]);
   const [galleryItems, setGalleryItems] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -42,11 +43,12 @@ const AdminDashboard = () => {
   const fetchData = async () => {
     setIsLoading(true);
     try {
-      const [bookingsRes, messagesRes, menuRes, galleryRes] = await Promise.all([
+      const [bookingsRes, messagesRes, menuRes, galleryRes, reviewsRes] = await Promise.all([
         fetch('/api/bookings', { headers: { Authorization: `Bearer ${token}` } }),
         fetch('/api/contact', { headers: { Authorization: `Bearer ${token}` } }),
         fetch('/api/menu'),
-        fetch('/api/gallery')
+        fetch('/api/gallery'),
+        fetch('/api/reviews/admin', { headers: { Authorization: `Bearer ${token}` } })
       ]);
 
       if (bookingsRes.status === 401 || messagesRes.status === 401) {
@@ -58,11 +60,13 @@ const AdminDashboard = () => {
       const messagesData = await messagesRes.json();
       const menuData = await menuRes.json();
       const galleryData = await galleryRes.json();
+      const reviewsData = await reviewsRes.json();
 
       setBookings(bookingsData);
       setMessages(messagesData);
       setMenuItems(menuData);
       setGalleryItems(galleryData);
+      setReviews(reviewsData);
     } catch (err) {
       toast.error('Failed to load dashboard data');
     } finally {
@@ -111,6 +115,27 @@ const AdminDashboard = () => {
       }
     } catch (err) {
       toast.error('Failed to update status');
+    }
+  };
+
+  // Review Actions
+  const handleUpdateReviewStatus = async (id, status) => {
+    try {
+      const res = await fetch(`/api/reviews/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({ status })
+      });
+      const data = await res.json();
+      if(res.ok) {
+        setReviews(reviews.map(r => r._id === id ? data : r));
+        toast.success(`Review ${status.toLowerCase()}`);
+      }
+    } catch (err) {
+      toast.error('Failed to update review status');
     }
   };
 
@@ -297,6 +322,12 @@ const AdminDashboard = () => {
           >
             <FaImage /> Gallery
           </button>
+          <button 
+            className={`admin-nav-btn ${activeTab === 'reviews' ? 'active' : ''}`}
+            onClick={() => setActiveTab('reviews')}
+          >
+            <FaStar /> Reviews
+          </button>
         </nav>
         <div className="admin-bottom">
           <button className="logout-btn" onClick={handleLogout}>
@@ -312,12 +343,14 @@ const AdminDashboard = () => {
             {activeTab === 'messages' && 'Customer Messages'}
             {activeTab === 'menu' && 'Menu Editor'}
             {activeTab === 'gallery' && 'Gallery CMS'}
+            {activeTab === 'reviews' && 'Reviews'}
           </h1>
           <div className="admin-stats">
             {activeTab === 'bookings' && <span>Total: {bookings.length}</span>}
             {activeTab === 'messages' && <span>Unread: {messages.filter(m => !m.isRead).length}</span>}
             {activeTab === 'menu' && <span>Live Dishes: {menuItems.length}</span>}
             {activeTab === 'gallery' && <span>Photos: {galleryItems.length}</span>}
+            {activeTab === 'reviews' && <span>Pending: {reviews.filter(r => r.status === 'Pending').length}</span>}
           </div>
         </header>
 
@@ -453,7 +486,7 @@ const AdminDashboard = () => {
                 </table>
               </div>
             </div>
-          ) : (
+          ) : activeTab === 'gallery' ? (
             <div className="gallery-editor-section">
               <div className="menu-editor-actions" style={{ marginBottom: '1.5rem', display: 'flex', justifyContent: 'space-between' }}>
                 <button className="gold-cta" onClick={() => setShowGalleryModal(true)}>+ Add Photo</button>
@@ -483,6 +516,32 @@ const AdminDashboard = () => {
                     No photos in gallery. Click "Seed Default Photos" above.
                   </div>
                 )}
+              </div>
+            </div>
+          ) : (
+            <div className="tab-content">
+              <h2>Review Management</h2>
+              <div className="messages-grid">
+                {reviews.length === 0 ? <p>No reviews found.</p> : reviews.map(review => (
+                  <div key={review._id} className="message-card glass-card">
+                    <div className="message-header">
+                      <h3>{review.user?.name || 'Unknown User'}</h3>
+                      <span className={`status-badge ${review.status.toLowerCase()}`}>{review.status}</span>
+                    </div>
+                    <div className="message-details" style={{ display: 'flex', gap: '5px', color: 'var(--gold)' }}>
+                      {[...Array(review.rating)].map((_, i) => <FaStar key={i} />)}
+                    </div>
+                    <p className="message-text">"{review.text}"</p>
+                    <div className="message-actions">
+                      {review.status !== 'Approved' && (
+                        <button className="action-btn confirm" onClick={() => handleUpdateReviewStatus(review._id, 'Approved')}>Approve</button>
+                      )}
+                      {review.status !== 'Rejected' && (
+                        <button className="action-btn cancel" onClick={() => handleUpdateReviewStatus(review._id, 'Rejected')}>Reject</button>
+                      )}
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
           )}
