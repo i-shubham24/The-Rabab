@@ -415,6 +415,11 @@
   border-radius: 4px;
 }
 
+.input-group .input-field option {
+  background: #1a1a1a;
+  color: #fff;
+}
+
 .input-group .input-field:focus {
   border-color: var(--gold);
   outline: none;
