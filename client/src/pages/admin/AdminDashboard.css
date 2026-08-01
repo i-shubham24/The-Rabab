@@ -218,6 +218,62 @@
   box-shadow: 0 4px 15px rgba(201, 168, 76, 0.2);
 }
 
+/* Analytics Overview */
+.analytics-overview {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+}
+
+.kpi-card {
+  background: #111;
+  border-radius: 12px;
+  padding: 1.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  text-align: center;
+}
+
+.kpi-card h3 {
+  color: var(--gold);
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+  font-family: var(--font-display);
+}
+
+.kpi-value {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #fff;
+  margin: 0;
+}
+
+.charts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: 1.5rem;
+}
+
+.chart-container {
+  background: #111;
+  border-radius: 12px;
+  padding: 1.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.chart-container h3 {
+  color: var(--gold);
+  font-size: 1.2rem;
+  margin-bottom: 1.5rem;
+  font-family: var(--font-display);
+  text-align: center;
+}
+
 /* Messages Grid */
 .messages-grid {
   display: grid;

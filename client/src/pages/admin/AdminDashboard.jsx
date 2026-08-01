@@ -2,12 +2,15 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { io } from 'socket.io-client';
 import toast from 'react-hot-toast';
-import { FaSignOutAlt, FaCalendarAlt, FaEnvelope, FaCheck, FaTimes, FaUtensils, FaTrash, FaEdit, FaImage, FaStar, FaImages, FaShoppingBag, FaBell } from 'react-icons/fa';
+import { FaChartPie, FaSignOutAlt, FaCalendarAlt, FaEnvelope, FaCheck, FaTimes, FaUtensils, FaTrash, FaEdit, FaImage, FaStar, FaImages, FaShoppingBag, FaBell } from 'react-icons/fa';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell } from 'recharts';
 import { menuItems as staticMenuItems } from '../../data/menuData.js';
 import './AdminDashboard.css';
 
 const AdminDashboard = () => {
-  const [activeTab, setActiveTab] = useState('bookings');
+  const [activeTab, setActiveTab] = useState('overview');
+  const [analytics, setAnalytics] = useState(null);
+  const [revenueData, setRevenueData] = useState([]);
   const [bookings, setBookings] = useState([]);
   const [messages, setMessages] = useState([]);
   const [reviews, setReviews] = useState([]);
@@ -64,13 +67,15 @@ const AdminDashboard = () => {
   const fetchData = async () => {
     setIsLoading(true);
     try {
-      const [bookingsRes, messagesRes, menuRes, galleryRes, reviewsRes, ordersRes] = await Promise.all([
+      const [bookingsRes, messagesRes, menuRes, galleryRes, reviewsRes, ordersRes, overviewRes, revenueRes] = await Promise.all([
         fetch('/api/bookings', { headers: { Authorization: `Bearer ${token}` } }),
         fetch('/api/contact', { headers: { Authorization: `Bearer ${token}` } }),
         fetch('/api/menu'),
         fetch('/api/gallery'),
         fetch('/api/reviews/admin', { headers: { Authorization: `Bearer ${token}` } }),
-        fetch('/api/orders/admin', { headers: { Authorization: `Bearer ${token}` } })
+        fetch('/api/orders/admin', { headers: { Authorization: `Bearer ${token}` } }),
+        fetch('/api/analytics/overview', { headers: { Authorization: `Bearer ${token}` } }),
+        fetch('/api/analytics/revenue?days=7', { headers: { Authorization: `Bearer ${token}` } })
       ]);
 
       if (bookingsRes.status === 401 || messagesRes.status === 401) {
@@ -84,6 +89,8 @@ const AdminDashboard = () => {
       const galleryData = await galleryRes.json();
       const reviewsData = await reviewsRes.json();
       const ordersData = await ordersRes.json();
+      const overviewData = await overviewRes.json();
+      const revenueChartData = await revenueRes.json();
 
       setBookings(bookingsData);
       setMessages(messagesData);
@@ -91,6 +98,8 @@ const AdminDashboard = () => {
       setGalleryItems(galleryData);
       setReviews(reviewsData);
       setOrders(ordersData);
+      setAnalytics(overviewData);
+      setRevenueData(revenueChartData);
     } catch (err) {
       toast.error('Failed to load dashboard data');
     } finally {
@@ -343,6 +352,12 @@ const AdminDashboard = () => {
         </div>
         <nav className="admin-nav">
           <button 
+            className={`admin-nav-btn ${activeTab === 'overview' ? 'active' : ''}`}
+            onClick={() => setActiveTab('overview')}
+          >
+            <FaChartPie /> Dashboard
+          </button>
+          <button 
             className={`admin-nav-btn ${activeTab === 'bookings' ? 'active' : ''}`}
             onClick={() => setActiveTab('bookings')}
           >
@@ -389,6 +404,7 @@ const AdminDashboard = () => {
       <main className="admin-main">
         <header className="admin-header">
           <h1>
+            {activeTab === 'overview' && 'Dashboard Overview'}
             {activeTab === 'bookings' && 'Reservations'}
             {activeTab === 'messages' && 'Customer Messages'}
             {activeTab === 'menu' && 'Menu Editor'}
@@ -397,6 +413,7 @@ const AdminDashboard = () => {
             {activeTab === 'orders' && 'Online Orders'}
           </h1>
           <div className="admin-stats">
+            {activeTab === 'overview' && analytics && <span>Today's Rev: ₹{analytics.todayRevenue}</span>}
             {activeTab === 'bookings' && <span>Total: {bookings.length}</span>}
             {activeTab === 'messages' && <span>Unread: {messages.filter(m => !m.isRead).length}</span>}
             {activeTab === 'menu' && <span>Live Dishes: {menuItems.length}</span>}
@@ -409,6 +426,55 @@ const AdminDashboard = () => {
         <div className="admin-content">
           {isLoading ? (
             <div className="admin-loader">Loading data...</div>
+          ) : activeTab === 'overview' && analytics ? (
+            <div className="analytics-overview">
+              <div className="kpi-grid">
+                <div className="kpi-card">
+                  <h3>Total Revenue</h3>
+                  <p className="kpi-value">₹{analytics.totalRevenue.toLocaleString()}</p>
+                </div>
+                <div className="kpi-card">
+                  <h3>Today's Orders</h3>
+                  <p className="kpi-value">{analytics.todayOrders}</p>
+                </div>
+                <div className="kpi-card">
+                  <h3>Today's Bookings</h3>
+                  <p className="kpi-value">{analytics.todayBookings}</p>
+                </div>
+                <div className="kpi-card">
+                  <h3>Total Customers</h3>
+                  <p className="kpi-value">{analytics.totalCustomers}</p>
+                </div>
+              </div>
+
+              <div className="charts-grid">
+                <div className="chart-container">
+                  <h3>Revenue (Last 7 Days)</h3>
+                  <ResponsiveContainer width="100%" height={300}>
+                    <BarChart data={revenueData}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
+                      <XAxis dataKey="date" stroke="#c9a84c" />
+                      <YAxis stroke="#c9a84c" />
+                      <RechartsTooltip contentStyle={{ backgroundColor: '#1a1a1a', border: '1px solid #c9a84c', color: '#c9a84c' }} />
+                      <Bar dataKey="revenue" fill="#800020" radius={[4, 4, 0, 0]} />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+
+                <div className="chart-container">
+                  <h3>Orders (Last 7 Days)</h3>
+                  <ResponsiveContainer width="100%" height={300}>
+                    <LineChart data={revenueData}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
+                      <XAxis dataKey="date" stroke="#c9a84c" />
+                      <YAxis stroke="#c9a84c" />
+                      <RechartsTooltip contentStyle={{ backgroundColor: '#1a1a1a', border: '1px solid #c9a84c', color: '#c9a84c' }} />
+                      <Line type="monotone" dataKey="orders" stroke="#c9a84c" strokeWidth={3} dot={{ r: 5, fill: '#800020' }} />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+            </div>
           ) : activeTab === 'bookings' ? (
             <div className="table-responsive">
               <table className="admin-table">
