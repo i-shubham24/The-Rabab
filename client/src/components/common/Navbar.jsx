@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FaBars, FaTimes, FaPhone, FaInstagram } from 'react-icons/fa';
+import { FaBars, FaTimes, FaPhone, FaInstagram, FaCalendarAlt } from 'react-icons/fa';
 import './Navbar.css';
 
 const navLinks = [
@@ -106,6 +106,9 @@ const Navbar = () => {
           </a>
           <Link to="/booking" className="btn btn-gold btn-sm navbar__cta">
             Book a Table
+          </Link>
+          <Link to="/booking" className="navbar__mobile-book" aria-label="Book a table" title="Book a Table">
+            <FaCalendarAlt />
           </Link>
         </div>
 

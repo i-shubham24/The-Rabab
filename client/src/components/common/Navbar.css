@@ -186,6 +186,17 @@
   display: none;
 }
 
+.navbar__mobile-book {
+  display: none;
+  font-size: 1.2rem;
+  color: var(--gold);
+  transition: color var(--transition-fast);
+}
+
+.navbar__mobile-book:hover {
+  color: var(--gold-400);
+}
+
 /* ─── Mobile Toggle ─── */
 .navbar__toggle {
   display: none;
@@ -290,6 +301,11 @@
   }
   .navbar__toggle {
     display: block;
+  }
+  .navbar__mobile-book {
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 }
 
