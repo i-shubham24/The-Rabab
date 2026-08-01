@@ -16,14 +16,53 @@ const MenuFilter = ({
 }) => {
   return (
     <div className="menu-filter-container">
-      <div className="menu-search-bar">
-        <FaSearch className="search-icon" />
-        <input 
-          type="text" 
-          placeholder="Search for dishes..." 
-          value={searchQuery}
-          onChange={(e) => onSearchChange(e.target.value)}
-        />
+      <div className="menu-filter-top-row">
+        <div className="menu-search-bar">
+          <FaSearch className="search-icon" />
+          <input 
+            type="text" 
+            placeholder="Search for dishes..." 
+            value={searchQuery}
+            onChange={(e) => onSearchChange(e.target.value)}
+          />
+        </div>
+
+        <div className="menu-filters-advanced">
+          <div className="veg-filter">
+            <button 
+              className={`filter-btn ${vegFilter === 'all' ? 'active' : ''}`}
+              onClick={() => onVegFilterChange('all')}
+            >
+              All
+            </button>
+            <button 
+              className={`filter-btn veg ${vegFilter === 'veg' ? 'active' : ''}`}
+              onClick={() => onVegFilterChange('veg')}
+            >
+              <span className="dot green"></span> Veg
+            </button>
+            <button 
+              className={`filter-btn non-veg ${vegFilter === 'non-veg' ? 'active' : ''}`}
+              onClick={() => onVegFilterChange('non-veg')}
+            >
+              <span className="dot red"></span> Non-Veg
+            </button>
+          </div>
+
+          <div className="spice-filter">
+            <select 
+              value={spiceFilter} 
+              onChange={(e) => onSpiceFilterChange(e.target.value)}
+              className="spice-select"
+            >
+              <option value="all">Any Spice Level</option>
+              <option value="0">Not Spicy</option>
+              <option value="1">Mild 🌶️</option>
+              <option value="2">Medium 🌶️🌶️</option>
+              <option value="3">Hot 🌶️🌶️🌶️</option>
+            </select>
+          </div>
+        </div>
       </div>
 
       <div className="menu-categories-wrapper">
@@ -48,41 +87,6 @@ const MenuFilter = ({
         </div>
       </div>
 
-      <div className="menu-filters-advanced">
-        <div className="veg-filter">
-          <button 
-            className={`filter-btn ${vegFilter === 'all' ? 'active' : ''}`}
-            onClick={() => onVegFilterChange('all')}
-          >
-            All
-          </button>
-          <button 
-            className={`filter-btn veg ${vegFilter === 'veg' ? 'active' : ''}`}
-            onClick={() => onVegFilterChange('veg')}
-          >
-            <span className="dot green"></span> Veg
-          </button>
-          <button 
-            className={`filter-btn non-veg ${vegFilter === 'non-veg' ? 'active' : ''}`}
-            onClick={() => onVegFilterChange('non-veg')}
-          >
-            <span className="dot red"></span> Non-Veg
-          </button>
-        </div>
-
-        <div className="spice-filter">
-          <select 
-            value={spiceFilter} 
-            onChange={(e) => onSpiceFilterChange(e.target.value)}
-            className="spice-select"
-          >
-            <option value="all">Any Spice Level</option>
-            <option value="0">Not Spicy</option>
-            <option value="1">Mild 🌶️</option>
-            <option value="2">Medium 🌶️🌶️</option>
-            <option value="3">Hot 🌶️🌶️🌶️</option>
-          </select>
-        </div>
       </div>
     </div>
   );
