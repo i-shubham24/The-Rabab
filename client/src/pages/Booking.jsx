@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { FaCheckCircle, FaStar, FaCrown, FaConciergeBell } from 'react-icons/fa';
+import { AuthContext } from '../context/AuthContext';
 import './Booking.css';
 
 const Booking = () => {
+  const { user } = useContext(AuthContext);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [formData, setFormData] = useState({
     date: '',
@@ -11,11 +13,22 @@ const Booking = () => {
     partySize: '2',
     seating: 'Indoor',
     occasion: 'None',
-    name: '',
-    phone: '',
-    email: '',
+    name: user ? user.name : '',
+    phone: user && user.phone ? user.phone : '',
+    email: user ? user.email : '',
     requests: ''
   });
+
+  useEffect(() => {
+    if (user) {
+      setFormData(prev => ({
+        ...prev,
+        name: prev.name || user.name,
+        email: prev.email || user.email,
+        phone: prev.phone || (user.phone || '')
+      }));
+    }
+  }, [user]);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -38,6 +51,7 @@ const Booking = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           ...formData,
+          user: user ? user._id : undefined,
           partySize: parseInt(formData.partySize) || 2 // Backend expects number
         })
       });

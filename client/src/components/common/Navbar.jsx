@@ -1,7 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FaBars, FaTimes, FaPhone, FaInstagram, FaCalendarAlt } from 'react-icons/fa';
+import { FaBars, FaTimes, FaPhone, FaInstagram, FaUser } from 'react-icons/fa';
+import { AuthContext } from '../../context/AuthContext';
+import AuthModal from './AuthModal';
 import './Navbar.css';
 
 const navLinks = [
@@ -16,6 +18,8 @@ const navLinks = [
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const { user, logout } = useContext(AuthContext);
   const location = useLocation();
 
   useEffect(() => {
@@ -95,15 +99,15 @@ const Navbar = () => {
             <FaPhone />
             <span>+91 7900324000</span>
           </a>
-          <a
-            href="https://instagram.com/therababrayya"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="navbar__social"
-            title="Follow us on Instagram"
-          >
-            <FaInstagram />
-          </a>
+          {user ? (
+            <Link to="/profile" className="navbar__profile" title="My Profile" style={{ color: 'var(--gold)', fontSize: '1.2rem', margin: '0 15px' }}>
+              <FaUser />
+            </Link>
+          ) : (
+            <button onClick={() => setShowAuthModal(true)} className="navbar__profile" title="Sign In" style={{ background: 'none', border: 'none', color: '#fff', fontSize: '1.2rem', cursor: 'pointer', margin: '0 15px' }}>
+              <FaUser />
+            </button>
+          )}
           <Link to="/booking" className="btn btn-gold btn-sm navbar__cta">
             Book a Table
           </Link>
@@ -166,6 +170,8 @@ const Navbar = () => {
           </motion.div>
         )}
       </AnimatePresence>
+
+      <AuthModal isOpen={showAuthModal} onClose={() => setShowAuthModal(false)} />
     </motion.nav>
   );
 };

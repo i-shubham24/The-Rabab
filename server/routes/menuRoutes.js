@@ -8,12 +8,12 @@ import {
   seedMenuItems
 } from '../controllers/menuController.js';
 
-import { protect } from '../middleware/authMiddleware.js';
+import { protect, admin } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
-router.post('/seed', protect, seedMenuItems);
-router.route('/').get(getMenuItems).post(protect, createMenuItem);
-router.route('/:id').get(getMenuItemById).put(protect, updateMenuItem).delete(protect, deleteMenuItem);
+router.post('/seed', protect, admin, seedMenuItems);
+router.route('/').get(getMenuItems).post(protect, admin, createMenuItem);
+router.route('/:id').get(getMenuItemById).put(protect, admin, updateMenuItem).delete(protect, admin, deleteMenuItem);
 
 export default router;
