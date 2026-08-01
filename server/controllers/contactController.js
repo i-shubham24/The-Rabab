@@ -1,5 +1,6 @@
 import Contact from '../models/Contact.js';
 import asyncHandler from '../utils/asyncHandler.js';
+import { sendContactAutoReply } from '../services/emailService.js';
 
 export const submitContactForm = asyncHandler(async (req, res) => {
   const { name, email, phone, subject, message } = req.body;
@@ -11,6 +12,9 @@ export const submitContactForm = asyncHandler(async (req, res) => {
     subject,
     message
   });
+
+  // Send auto-reply asynchronously
+  sendContactAutoReply(contact).catch(err => console.error('Failed to send contact auto-reply', err));
 
   res.status(201).json({ success: true, data: contact, message: 'Contact form submitted successfully' });
 });

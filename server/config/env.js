@@ -10,6 +10,12 @@ const env = {
   frontendUrl: process.env.FRONTEND_URL || 'http://localhost:5173',
   adminEmail: process.env.ADMIN_EMAIL || 'admin@majesticrabab.com',
   adminPassword: process.env.ADMIN_PASSWORD || 'RababAdmin2026',
+  smtp: {
+    host: process.env.SMTP_HOST || 'smtp.ethereal.email',
+    port: process.env.SMTP_PORT || 587,
+    user: process.env.SMTP_USER || '',
+    pass: process.env.SMTP_PASS || '',
+  }
 };
 
 export default env;
