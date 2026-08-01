@@ -99,7 +99,7 @@ const Navbar = () => {
         <div className="navbar__actions">
           <a href="tel:+917900324000" className="navbar__phone" title="Call for reservation">
             <FaPhone />
-            <span>+91 7900324000</span>
+            <span>7900324000</span>
           </a>
           {user ? (
             <Link to="/profile" className="navbar__profile" title="My Profile" style={{ color: 'var(--gold)', fontSize: '1.2rem', margin: '0 15px' }}>
@@ -169,7 +169,7 @@ const Navbar = () => {
               </ul>
               <div className="navbar__mobile-actions">
                 <a href="tel:+917900324000" className="btn btn-outline w-full">
-                  <FaPhone /> Call +91 7900324000
+                  <FaPhone /> Call 7900324000
                 </a>
                 <Link to="/booking" className="btn btn-gold w-full">
                   Book a Table

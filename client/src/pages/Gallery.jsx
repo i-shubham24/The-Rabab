@@ -12,14 +12,22 @@ const Gallery = () => {
   const [galleryData, setGalleryData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
+const fallbackGallery = [
+  { _id: '1', mediaUrl: '/images/food/dal-makhani.jpg', category: 'Food', title: 'Signature Dal Makhani' },
+  { _id: '2', mediaUrl: '/images/ambiance/interior.jpg', category: 'Ambiance', title: 'Royal Dining Area' },
+  { _id: '3', mediaUrl: '/images/food/food-spread.jpg', category: 'Food', title: 'The Royal Spread' }
+];
+
   useEffect(() => {
     const fetchGallery = async () => {
       try {
         const res = await fetch('/api/gallery');
+        if (!res.ok) throw new Error('API Error');
         const data = await res.json();
-        setGalleryData(data);
+        setGalleryData(Array.isArray(data) && data.length > 0 ? data : fallbackGallery);
       } catch (err) {
         console.error('Failed to fetch gallery', err);
+        setGalleryData(fallbackGallery);
       } finally {
         setIsLoading(false);
       }
