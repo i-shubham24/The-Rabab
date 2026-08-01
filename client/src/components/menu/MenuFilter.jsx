@@ -86,8 +86,6 @@ const MenuFilter = ({
           ))}
         </div>
       </div>
-
-      </div>
     </div>
   );
 };

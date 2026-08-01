@@ -5,7 +5,7 @@
 }
 
 .contact-hero {
-  background: linear-gradient(rgba(128, 0, 32, 0.8), rgba(26, 26, 26, 0.9)), url('/images/ambiance/contact-hero.jpg') center/cover;
+  background: linear-gradient(rgba(128, 0, 32, 0.8), rgba(26, 26, 26, 0.9)), url('/images/ambiance/interior.jpg') center/cover;
   padding: 6rem 2rem;
   text-align: center;
   border-bottom: 2px solid var(--gold, #C9A84C);
