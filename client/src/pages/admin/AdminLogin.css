@@ -51,4 +51,15 @@
   width: 100%;
   padding: 1rem;
   margin-top: 1rem;
+  border-radius: 50px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  box-shadow: 0 4px 15px rgba(201, 168, 76, 0.3);
+  transition: all 0.3s ease;
+}
+
+.admin-login-form .gold-cta:hover {
+  box-shadow: 0 6px 20px rgba(201, 168, 76, 0.5);
+  transform: translateY(-2px);
 }
