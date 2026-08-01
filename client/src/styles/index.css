@@ -537,6 +537,32 @@ h1, h2, h3, h4, h5, h6 {
   border-radius: var(--radius-full);
 }
 
+/* ─── Global Form/Action CTA Button ─── */
+.gold-cta {
+  background: transparent !important;
+  color: var(--gold) !important;
+  border: 1px solid var(--gold) !important;
+  padding: 0.6rem 1.2rem;
+  font-family: var(--font-accent);
+  font-size: 0.9rem;
+  font-weight: 500;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s ease !important;
+  box-shadow: none !important;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.gold-cta:hover {
+  background: var(--gold) !important;
+  color: var(--charcoal) !important;
+  box-shadow: 0 4px 15px rgba(201, 168, 76, 0.3) !important;
+}
+
 
 /* ─── Card System ─── */
 .card {
