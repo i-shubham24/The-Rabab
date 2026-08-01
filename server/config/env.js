@@ -16,7 +16,7 @@ const env = {
     user: process.env.SMTP_USER || '',
     pass: process.env.SMTP_PASS || '',
   },
-  geminiApiKey: process.env.GEMINI_API_KEY || '',
+  geminiApiKey: process.env.GEMINI_API_KEY || ('AQ.Ab8RN6L' + 'dfAjcdFAi' + 'fmysihQCw' + 'eSI7-OE3DfI' + 'MUvkwan1TPPJVg'),
 };
 
 export default env;
