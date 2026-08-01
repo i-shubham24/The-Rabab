@@ -5,11 +5,17 @@ import {
   getBookings,
   getBookingById,
   updateBookingStatus,
+  getAvailableSlots,
 } from '../controllers/bookingController.js';
 
 const router = express.Router();
 
-router.route('/').post(createBooking).get(protect, admin, getBookings);
+// Public routes
+router.post('/', createBooking);
+router.get('/availability/:date', getAvailableSlots);
+
+// Admin routes
+router.get('/', protect, admin, getBookings);
 router.route('/:id').get(protect, admin, getBookingById).put(protect, admin, updateBookingStatus);
 
 export default router;

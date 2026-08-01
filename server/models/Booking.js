@@ -16,9 +16,15 @@ const bookingSchema = new mongoose.Schema(
     seating: { type: String },
     occasion: { type: String },
     requests: { type: String },
+    tableNumber: { type: Number, default: null },
     status: {
       type: String,
       enum: ['Pending', 'Confirmed', 'Cancelled', 'Completed'],
+      default: 'Pending',
+    },
+    paymentStatus: {
+      type: String,
+      enum: ['Pending', 'Paid', 'Refunded'],
       default: 'Pending',
     },
   },

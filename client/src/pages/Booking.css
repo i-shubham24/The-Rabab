@@ -291,3 +291,62 @@
 .assistance-note strong {
   color: var(--gold, #C9A84C);
 }
+
+/* ─── Live Time Slot Grid ─── */
+.time-slot-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.time-slot-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0.6rem 0.4rem;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(201, 168, 76, 0.2);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: var(--cream, #F5F0E8);
+}
+
+.time-slot-btn:hover:not(:disabled) {
+  border-color: var(--gold, #C9A84C);
+  background: rgba(201, 168, 76, 0.08);
+}
+
+.time-slot-btn.active {
+  border-color: var(--gold, #C9A84C);
+  background: rgba(201, 168, 76, 0.15);
+  box-shadow: 0 0 10px rgba(201, 168, 76, 0.15);
+}
+
+.time-slot-btn.sold-out {
+  opacity: 0.35;
+  cursor: not-allowed;
+  border-color: rgba(255, 255, 255, 0.05);
+}
+
+.slot-time {
+  font-family: var(--font-ui, 'Inter', sans-serif);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: inherit;
+}
+
+.slot-status {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 2px;
+  color: var(--gold, #C9A84C);
+  opacity: 0.8;
+}
+
+.time-slot-btn.sold-out .slot-status {
+  color: #ff6b6b;
+}
+

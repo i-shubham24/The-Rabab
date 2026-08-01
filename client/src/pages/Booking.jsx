@@ -19,6 +19,11 @@ const Booking = () => {
     requests: ''
   });
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState(null);
+  const [slotData, setSlotData] = useState(null);
+  const [slotsLoading, setSlotsLoading] = useState(false);
+
   useEffect(() => {
     if (user) {
       setFormData(prev => ({
@@ -30,6 +35,39 @@ const Booking = () => {
     }
   }, [user]);
 
+  // Fetch available slots when date changes
+  useEffect(() => {
+    if (!formData.date) return;
+    const fetchSlots = async () => {
+      setSlotsLoading(true);
+      try {
+        const res = await fetch(`/api/bookings/availability/${formData.date}`);
+        if (res.ok) {
+          const data = await res.json();
+          setSlotData(data);
+          // Auto-select first available slot
+          const firstAvailable = data.slots.find(s => s.available);
+          if (firstAvailable) {
+            setFormData(prev => ({ ...prev, time: firstAvailable.time }));
+          }
+        }
+      } catch (err) {
+        console.error('Failed to fetch slots', err);
+      } finally {
+        setSlotsLoading(false);
+      }
+    };
+    fetchSlots();
+  }, [formData.date]);
+
+  // Format 24h time to 12h display
+  const formatTime = (time24) => {
+    const [h, m] = time24.split(':').map(Number);
+    const ampm = h >= 12 ? 'PM' : 'AM';
+    const displayH = h > 12 ? h - 12 : h === 0 ? 12 : h;
+    return `${displayH}:${String(m).padStart(2, '0')} ${ampm}`;
+  };
+
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
@@ -37,9 +75,6 @@ const Booking = () => {
   const handlePartySize = (size) => {
     setFormData({ ...formData, partySize: size });
   };
-
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState(null);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -140,23 +175,6 @@ const Booking = () => {
     visible: { opacity: 1, y: 0, transition: { duration: 0.6 } }
   };
 
-  // Generate time slots
-  const timeSlots = [];
-  let startHour = 12;
-  let startMin = 0;
-  while (startHour < 23 || (startHour === 22 && startMin <= 30)) {
-    const ampm = startHour >= 12 ? 'PM' : 'AM';
-    const displayHour = startHour > 12 ? startHour - 12 : startHour;
-    const displayMin = startMin === 0 ? '00' : '30';
-    timeSlots.push(`${displayHour}:${displayMin} ${ampm}`);
-    
-    startMin += 30;
-    if (startMin >= 60) {
-      startMin = 0;
-      startHour++;
-    }
-  }
-
   // Generate party sizes
   const partySizes = ['1', '2', '3', '4', '5', '6', '7', '8', '8+'];
 
@@ -189,14 +207,31 @@ const Booking = () => {
                   <label>Date</label>
                   <input type="date" name="date" className="input-field" min={new Date().toISOString().split('T')[0]} required onChange={handleChange} />
                 </div>
-                <div className="input-group">
-                  <label>Time</label>
-                  <select name="time" className="input-field" required onChange={handleChange} value={formData.time}>
-                    {timeSlots.map(time => (
-                      <option key={time} value={time}>{time}</option>
+              </div>
+
+              {/* Live Time Slot Picker */}
+              <div className="input-group">
+                <label>Select Time {slotsLoading && <span style={{ color: 'var(--gold)', fontSize: '0.8rem' }}>(Loading...)</span>}</label>
+                {!formData.date ? (
+                  <p style={{ color: 'var(--charcoal-300)', fontStyle: 'italic', fontSize: '0.9rem' }}>Please select a date first</p>
+                ) : slotData ? (
+                  <div className="time-slot-grid">
+                    {slotData.slots.map(slot => (
+                      <button
+                        type="button"
+                        key={slot.time}
+                        className={`time-slot-btn ${formData.time === slot.time ? 'active' : ''} ${!slot.available ? 'sold-out' : ''}`}
+                        disabled={!slot.available}
+                        onClick={() => setFormData({ ...formData, time: slot.time })}
+                      >
+                        <span className="slot-time">{formatTime(slot.time)}</span>
+                        <span className="slot-status">
+                          {!slot.available ? 'Full' : slot.remaining <= 6 ? `${slot.remaining} left` : 'Open'}
+                        </span>
+                      </button>
                     ))}
-                  </select>
-                </div>
+                  </div>
+                ) : null}
               </div>
 
               <div className="input-group party-size-group">

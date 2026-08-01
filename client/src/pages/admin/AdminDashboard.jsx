@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { io } from 'socket.io-client';
 import toast from 'react-hot-toast';
-import { FaSignOutAlt, FaCalendarAlt, FaEnvelope, FaCheck, FaTimes, FaUtensils, FaTrash, FaEdit, FaImage, FaStar, FaImages, FaShoppingBag } from 'react-icons/fa';
+import { FaSignOutAlt, FaCalendarAlt, FaEnvelope, FaCheck, FaTimes, FaUtensils, FaTrash, FaEdit, FaImage, FaStar, FaImages, FaShoppingBag, FaBell } from 'react-icons/fa';
 import { menuItems as staticMenuItems } from '../../data/menuData.js';
 import './AdminDashboard.css';
 
@@ -40,6 +41,25 @@ const AdminDashboard = () => {
     }
     fetchData();
   }, [token, navigate]);
+
+  // Socket.IO real-time updates
+  useEffect(() => {
+    const socket = io(window.location.origin, { transports: ['websocket', 'polling'] });
+
+    socket.on('booking:new', (booking) => {
+      toast('🔔 New Reservation!', {
+        icon: '📅',
+        style: { background: '#1a1a1a', color: '#c9a84c', border: '1px solid #c9a84c' },
+      });
+      setBookings(prev => [booking, ...prev]);
+    });
+
+    socket.on('booking:statusUpdate', (updatedBooking) => {
+      setBookings(prev => prev.map(b => b._id === updatedBooking._id ? updatedBooking : b));
+    });
+
+    return () => socket.disconnect();
+  }, []);
 
   const fetchData = async () => {
     setIsLoading(true);
